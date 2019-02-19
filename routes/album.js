@@ -3,9 +3,9 @@ const express = require('express'),
 	aws = require('aws-sdk'),
 	ObjectId = require('mongodb').ObjectID
 
-aws.config.region = "us-east-1"
-aws.config.accessKeyId = "AKIAJ42U3VYKBPCL6LCA"
-aws.config.secretAccessKey = "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"
+aws.config.region = ""
+aws.config.accessKeyId = ""
+aws.config.secretAccessKey = ""
 const s3 = new aws.S3()
 
 function getAlbum(db, id) {
