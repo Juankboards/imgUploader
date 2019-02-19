@@ -1,0 +1,96 @@
+<style>
+	#album {
+		display: flex;
+		justify-content: space-between;
+		padding: 10px 0;
+	}
+	#album .photo {
+		width: 50%;
+		max-width: 550px;
+		position: relative;
+	}
+	#album .photo h2 {
+		text-align: center;
+	    position: absolute;
+	    padding: 10px;
+	    left: 50%;
+	    transform: translateX(-50%);
+	    top: 30%;
+	    background-color: rgba(255,255,255,.6);
+	    border-radius: 5px;
+	    text-transform: uppercase;
+	}
+	#album .photo img {
+		width: 100%;
+		padding: 5px;
+	}
+	#album i {
+		position: absolute;
+		bottom: 20px;
+	    right: 20px;
+	    background-color: transparent;
+	    color: #f0f0f0;
+	    font-size: 25px;
+	    cursor: pointer;
+	}
+	#files {
+		display: none;
+	}
+	#album .photo i:hover {
+		color: #af0e40;
+	}
+	#result .thumbnail-wrapper {
+		position: relative;
+	}
+	.thumbnail {
+		width: 100px;
+	}
+	#clear, #upload-imgs {
+		display:none;
+	}
+	#result {
+		border: 4px dotted #cccccc;
+		display: none;
+		margin:10px auto;
+		width: 100%;
+		justify-content: space-around;
+		flex-wrap: wrap;
+		padding: 10px;
+		align-items: center;
+	}
+	
+	#result .thumbnail-wrapper i {
+		display: none;
+		position: absolute;
+		font-size: 25px;
+		color: #F0F0F0;
+		background-color: transparent;
+		bottom: 8px;
+		right: 6px;
+	}
+	#result .thumbnail-wrapper:hover {
+		-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  		filter: grayscale(100%);
+	}
+	#result .thumbnail-wrapper:hover i {
+		display: block;
+	}
+</style>
+
+<section>
+	<h1>{{ album.name }}</h1>
+	<input onchange="loadImage(event)" id="files" type="file" multiple/>
+	<button onclick="uploadImg(event)" id="select-images">Upload Images</button>
+	<button onclick="clearPrevImgs()" type="button" id="clear">Clear</button>
+	<output id="result"></output>
+	<button onclick="uploadImgs()" type="button" id="upload-imgs">Upload</button>
+	<button type="button" id="clear">Clear selected images</button>
+	<div id="album">
+		{{#each album.photos as |photo|}}
+		  <div class="photo">
+		  	<img src="{{ photo }}" />
+		  	<i onclick="deleteImg(event)" class="fas fa-trash"></i>
+		  </div>
+		{{/each}}
+	</div>
+</section>

@@ -1,0 +1,46 @@
+<style>
+	#albums {
+		display: flex;
+		justify-content: space-around;
+		padding: 10px 0;
+	}
+	#albums .album {
+		cursor: pointer;
+		width: 33%;
+		max-width: 350px;
+		position: relative;
+	}
+	#albums .album h2 {
+		text-align: center;
+	    position: absolute;
+	    padding: 10px;
+	    left: 50%;
+	    transform: translateX(-50%);
+	    top: 30%;
+	    background-color: rgba(255,255,255,.6);
+	    border-radius: 5px;
+	    text-transform: uppercase;
+	}
+	#albums .album img {
+		width: 100%;
+		border-radius: 5px;
+	}
+</style>
+
+<section>
+	<h1>Albums</h1>
+	<button onclick="openModal()">Create New Album</button>
+	<div id="albums">
+		{{#each albums as |album|}}
+		  <a href="album/{{ album._id }}" class="album">
+		  	<h2>{{ album.name }}</h2>
+		  	{{#if album.photos.[0]}}
+		  		<img src="{{ album.photos.[0] }}" alt="{{ album.name }} image" />
+		  	{{else}}
+		  		<img src="https://via.placeholder.com/350/5F5F5F/F0F0F0?text=No Images Jet" alt="{{ album.name }} image" />
+		  	{{/if}}
+		  </a>
+		{{/each}}
+	</div>
+</section>
+{{> modal }}
