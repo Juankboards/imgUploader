@@ -5,10 +5,10 @@
 		padding: 10px 0;
 	}
 	#albums .album {
-		cursor: pointer;
 		width: 33%;
 		max-width: 350px;
 		position: relative;
+		cursor: auto;
 	}
 	#albums .album h2 {
 		text-align: center;
@@ -25,6 +25,19 @@
 		width: 100%;
 		border-radius: 5px;
 	}
+
+	#albums i {
+		position: absolute;
+		bottom: 20px;
+	    right: 20px;
+	    background-color: transparent;
+	    color: #f0f0f0;
+	    font-size: 25px;
+	    cursor: pointer;
+	}
+	#albums .album i:hover {
+		color: #af0e40;
+	}
 </style>
 
 <section>
@@ -32,13 +45,14 @@
 	<button onclick="openModal()">Create New Album</button>
 	<div id="albums">
 		{{#each albums as |album|}}
-		  <a href="album/{{ album._id }}" class="album">
+		  <a id="{{ album._id }}" href="album/{{ album._id }}" class="album">
 		  	<h2>{{ album.name }}</h2>
 		  	{{#if album.photos.[0]}}
 		  		<img src="{{ album.photos.[0] }}" alt="{{ album.name }} image" />
 		  	{{else}}
 		  		<img src="https://via.placeholder.com/350/5F5F5F/F0F0F0?text=No Images Jet" alt="{{ album.name }} image" />
 		  	{{/if}}
+				<i onclick="deleteAlbum(event)" class="fas fa-trash"></i>
 		  </a>
 		{{/each}}
 	</div>

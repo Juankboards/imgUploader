@@ -1,4 +1,9 @@
 var imgCounter = 0
+var uploadingCounter = 0
+
+Element.prototype.remove = function() {
+    this.parentElement.removeChild(this);
+}
 
 function openModal() {
 	document.getElementById("modal").style.display = "block"
@@ -91,9 +96,9 @@ function imageLoaded(output, length, event) {
 	imgCounter++
 	var picFile = event.target;
   var div = document.createElement("div")
-  div.className = "thumbnail-wrapper"
-  div.innerHTML = "<img class='thumbnail' src='" + picFile.result + "'" +
-          "title='preview image'/><i onclick='removeImgElement(event)' class='fas fa-trash'></i>"
+  div.className = "thumbnail-wrapper"  
+  div.innerHTML = "<img id='" + picFile.result.slice(27, 97) + "' class='thumbnail' src='" + picFile.result + "'" +
+          "title='preview image'/><i onclick='removeImgElement(event, true)' class='fas fa-trash'></i>"
   output.insertBefore(div,null)
   if (imgCounter==length) {
   	imgCounter = 0
@@ -108,10 +113,22 @@ function clearPrevImgs() {
   document.getElementById("upload-imgs").style.display = "none"
 }
 
-function removeImgElement(event) {
+function removeImgElement(event, prevImg) {
 	event = crossEvent(event)
-	parent = event.target.parentNode
-	parent.parentNode.removeChild(parent)
+	event.target.parentNode.remove()
+	if(prevImg) checkOutput()
+}
+
+function checkOutput() {
+	if(!document.getElementById("result").childNodes.length) clearPrevImgs()
+}
+
+function deleteAlbum(event) {
+	event.preventDefault()
+	let id = event.target.parentElement.id
+	
+	console.log(id);
+	
 }
 
 function deleteImg(event) {
@@ -157,6 +174,7 @@ function uploadImgs() {
 	let imgsBatch = imgs.slice(0, 5)
 
 	while (imgsBatch.length && sliceCount < 50) {
+		uploadingCounter++
 		loading()
 		request("POST", path, JSON.stringify({ imgsBatch }), function (err, res) {
 			if(err)	{
@@ -164,8 +182,12 @@ function uploadImgs() {
 				return
 			}
 			console.log("Image added", res.data)
-			loaded()
-			// clearPrevImgs()
+			removeUploadedImg(res.data, document.getElementById("album"))
+			uploadingCounter--
+			if(!uploadingCounter) {
+				clearPrevImgs()
+				loaded()
+			}
 			return
 		});
 		sliceCount += 5
@@ -173,42 +195,24 @@ function uploadImgs() {
 	}
 }
 
+function removeUploadedImg(imgs, parent) {
+	imgs.forEach(img => {		
+		var div = document.createElement("div")
+  		div.className = "photo"  
+  		div.innerHTML = '<img src="' + img.name + '" />\
+			<i onclick="deleteImg(event)" class="fas fa-trash"></i>'
+		parent.insertBefore(div,null)
+		document.getElementById(img.data.slice(27, 97)).remove()
+	})
+}
+
 function crossEvent(event) {
 	if (!event)
 		event = window.event
 	return event
 }
-// if(window.File && window.FileList && window.FileReader) {
-// 	$(‘#files’).live(“change”, function(event) {
-// 	var files = event.target.files; //FileList object
-// 	var output = document.getElementById(“result”);
-// 	for(var i = 0; i< files.length; i++) {
-// var file = files[i];
-// //Only pics
-// // if(!file.type.match(‘image’))
-// if(file.type.match(‘image.*’)){
-// if(this.files[0].size < 2097152){
-// // continue;
-// var picReader = new FileReader();
-// picReader.addEventListener(“load”,function(event){
-// var picFile = event.target;
-// var div = document.createElement(“div”);
-// div.innerHTML = “<img class=’thumbnail’ src='” + picFile.result + “‘” +
-// “title=’preview image’/>”;
-// output.insertBefore(div,null);
-// });
-// //Read the image
-// $(‘#clear, #result’).show();
-// picReader.readAsDataURL(file);
-// }else{
-// alert(“Image Size is too big. Minimum size is 2MB.”);
-// $(this).val(“”);
-// }
-// }else{
-// alert(“You can only upload image file.”);
-// $(this).val(“”);
-// }
-// }
+
+
 
 // });
 // }

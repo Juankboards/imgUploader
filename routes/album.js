@@ -3,6 +3,8 @@ const express = require('express'),
 	aws = require('aws-sdk'),
 	ObjectId = require('mongodb').ObjectID
 
+require('dotenv').config()
+
 aws.config.region = process.env.S3_ZONE
 aws.config.accessKeyId = process.env.S3_ACCESS_KEY
 aws.config.secretAccessKey = process.env.S3_SECRET
@@ -25,7 +27,7 @@ function delImgDb(db, id, img) {
 }
 
 function addImgDb(db, id, imgName) {
-	return db.collection("folders").findOneAndUpdate({ "_id": id}, { $push: { "photos": `https://s3.amazonaws.com./czaudiovisual/${imgName}` } }, { returnOriginal: false })
+	return db.collection("folders").findOneAndUpdate({ "_id": id}, { $push: { "photos": `https://s3.amazonaws.com/czaudiovisual/${imgName}` } }, { returnOriginal: false })
 }
 
 function delImgS3(img) {
@@ -97,7 +99,7 @@ router.post('/:id/add', async function (req, res, next) {
 	promises = imgs.map(async imgData => {
 		let imgType = imgData.split(";")[0].split("/")[1],
 			imgName = documentName + "/img_" + Date.now() + "_" + Math.random().toString().split(".")[1]
-			
+		added.push({ data: imgData, name: `https://s3.amazonaws.com/czaudiovisual/${imgName}`})
 		try {
 			let dbResult = await addImgDb(db, id, imgName)
 			if(dbResult.ok) {
@@ -112,10 +114,15 @@ router.post('/:id/add', async function (req, res, next) {
 		}
 	})
 
-	let dbResults = await Promise.all(promises)
-	let s3Results = await Promise.all(dbResults.map(img => addImgS3(img)))
+	try {
+		let dbResults = await Promise.all(promises)
+		let s3Results = await Promise.all(dbResults.map(img => addImgS3(img)))
 
-	res.status(200).json({ data: s3Results})
+		res.status(200).json({ data: added})
+	} catch(err) {
+		res.status(400).json({ error: err})
+	}
+	
 })
 
 module.exports = router

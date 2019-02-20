@@ -8,6 +8,8 @@ const express = require('express'),
     albums = require('./routes/albums'),
     album = require('./routes/album')
     newAlbum = require('./routes/newAlbum')
+   
+require('dotenv').config()
 
 const port = process.env.PORT || 8080,
 	app = express()
