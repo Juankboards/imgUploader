@@ -14,7 +14,7 @@ const port = process.env.PORT || 8080,
 
 
 app.use(function(req, res, next) {
-	MongoClient.connect("mongodb://czaudiovisual:a97b607817fa4a5e5854e7b6c7a3d3ce@ds155774.mlab.com:55774/czaudiovisual", { useNewUrlParser: true }, (err, client) => {
+	MongoClient.connect(process.env.DB_CONNECTION, { useNewUrlParser: true }, (err, client) => {
 		if (err)
 			console.log(err)
 		res.locals.client = client

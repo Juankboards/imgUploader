@@ -3,9 +3,9 @@ const express = require('express'),
 	aws = require('aws-sdk'),
 	ObjectId = require('mongodb').ObjectID
 
-aws.config.region = "us-east-1"
-aws.config.accessKeyId = "AKIAJ42U3VYKBPCL6LCA"
-aws.config.secretAccessKey = "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"
+aws.config.region = process.env.S3_ZONE
+aws.config.accessKeyId = process.env.S3_ACCESS_KEY
+aws.config.secretAccessKey = process.env.S3_SECRET
 const s3 = new aws.S3()
 
 function getAlbum(db, id) {
@@ -41,7 +41,7 @@ function delImgS3(img) {
 function addImgS3({ imgData, imgName, imgType }) {
 	const imageBuffer = Buffer.from(imgData.split(",")[1], "base64")
 
-	return s3.putObject({
+	return s3.upload({
 	  Bucket: "czaudiovisual",
     Key: imgName,
     Body: imageBuffer,
