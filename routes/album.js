@@ -1,97 +1,51 @@
 const express = require('express'),
 	router = express.Router(),
-	aws = require('aws-sdk'),
-	ObjectId = require('mongodb').ObjectID
+	ObjectId = require('mongodb').ObjectID,
+	{ addImgDb, delImgDb, getAlbum } = require('./../utils/dbFunctions'),
+	{ addImgS3, delImgS3 } = require('./../utils/s3Functions')
 
-require('dotenv').config()
-
-aws.config.region = process.env.S3_ZONE
-aws.config.accessKeyId = process.env.S3_ACCESS_KEY
-aws.config.secretAccessKey = process.env.S3_SECRET
-const s3 = new aws.S3()
-
-function getAlbum(db, id) {
-	return db.collection("folders").find({ "_id": id}).toArray()
-		.then(items => {
-			return items
-		})
-		.catch(err => {
-			console.log(err)
-			return []
-		})
-}
-
-
-function delImgDb(db, id, img) {
-	return db.collection("folders").updateOne({ "_id": id}, { $pull: { "photos": `https://s3.amazonaws.com/${img}` } })
-}
-
-function addImgDb(db, id, imgName) {
-	return db.collection("folders").findOneAndUpdate({ "_id": id}, { $push: { "photos": `https://s3.amazonaws.com/czaudiovisual/${imgName}` } }, { returnOriginal: false })
-}
-
-function delImgS3(img) {
-	const s3 = new aws.S3(),	
-		imgInfo = img.split("/")
-
-	return s3.deleteObject({
-	  Bucket: imgInfo.shift(),
-	  Key: imgInfo.join("/") 
-	})
-}
-
-function addImgS3({ imgData, imgName, imgType }) {
-	const imageBuffer = Buffer.from(imgData.split(",")[1], "base64")
-
-	return s3.upload({
-	  Bucket: "czaudiovisual",
-    Key: imgName,
-    Body: imageBuffer,
-    ContentEncoding: 'base64',
-    ContentType: "image/" + imgType,
-		ACL: 'public-read'
-	}).promise()
-}
-
-
-router.get('/:id', function (req, res, next) {
+router.get('/:id', async (req, res, next) => {
 	let db = res.locals.client.db('czaudiovisual')
 	let id = ObjectId(req.params.id)
-
-	getAlbum(db, id)
-	.then(album => {
-		res.locals.client.close()
-		res.render('album', { album: album[0] })
-	})
+	let album = await getAlbum(db, id)
+	if(!album.name) {
+		res.status(404).json({ err: 'Not album found' })
+		return
+	}
+	res.locals.client.close()
+	res.render('album', { album: album })
 })
 
 router.post('/:id/delete', function (req, res, next) {
 	let db = res.locals.client.db('czaudiovisual')
 	let id = ObjectId(req.params.id)
 	let img = req.body.imgPath
-
-	var deleteS3Request = delImgS3(img)
-	deleteS3Request.send((err, data) => {
-		if (err) 
-			res.status(400).json({ message: err })
-
-		delImgDb(db, id, img)
-			.then(status => {
+	delImgS3(img)
+		.then( data => {
+			delImgDb(db, id, img)
+				.then(status => {
+						res.locals.client.close()
+						res.status(200).json({ message: "Image deleted"})
+				}).catch(err => {
 					res.locals.client.close()
-					if (!status.result.nModified)
-						res.status(400).json({ error: "Not found image" })
-					res.status(200).json({ message: "Image deleted"})
-				})
-				.catch(err => {
 					res.status(400).json({ error: err })
 				})
-			})
+		}) .catch(err => {
+			res.status(400).json({ message: err })
+		})
+		
 })
 
-router.post('/:id/add', async function (req, res, next) {
+router.post('/:id/add', async (req, res, next) => {
 	let db = res.locals.client.db('czaudiovisual')
 	let id = ObjectId(req.params.id)
-	let documentName = (await getAlbum(db, id))[0].name
+	let documentName = (await getAlbum(db, id)).name
+
+	if(!documentName) {
+		res.status(400).json({ error: 'Not album found' })
+		return
+	}
+	
 	let imgs = req.body.imgsBatch
 	let promises = []
 	let added = []
@@ -100,6 +54,8 @@ router.post('/:id/add', async function (req, res, next) {
 		let imgType = imgData.split(";")[0].split("/")[1],
 			imgName = documentName + "/img_" + Date.now() + "_" + Math.random().toString().split(".")[1]
 		added.push({ data: imgData, name: `https://s3.amazonaws.com/czaudiovisual/${imgName}`})
+		
+		
 		try {
 			let dbResult = await addImgDb(db, id, imgName)
 			if(dbResult.ok) {
@@ -120,6 +76,7 @@ router.post('/:id/add', async function (req, res, next) {
 
 		res.status(200).json({ data: added})
 	} catch(err) {
+		console.log(err);
 		res.status(400).json({ error: err})
 	}
 	

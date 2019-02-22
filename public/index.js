@@ -1,6 +1,9 @@
 var imgCounter = 0
 var uploadingCounter = 0
 
+if(window.location.pathname === "/") window.location.replace("/albums");
+
+
 Element.prototype.remove = function() {
     this.parentElement.removeChild(this);
 }
@@ -22,15 +25,26 @@ function createAlbum() {
 		return false;
 	}
 
-	request("POST", "/create-album", JSON.stringify({ "name": name, "description": description }), function (err, res) {
+	request("POST", "albums/add", JSON.stringify({ "name": name, "description": description }), (err, res) => {
+		closeModal()
 		if(err)	{
 			alert(err.error)
 			return
 		}
-		alert("Album created!")
-		return
+		addAlbum(res.data)		
 	});
+}
 
+function addAlbum(album) {
+	let parent = document.getElementById("albums")
+	var a = document.createElement("a")
+	a.className = "album"  
+	a.id = album._id
+	a.href =`album/${album._id}`
+	a.innerHTML = `<h2>${ album.name }</h2>
+					<img src='https://via.placeholder.com/350/5F5F5F/F0F0F0?text=No Images Jet' alt='${ album.name } image' />
+          <i onclick='deleteAlbum(event)' class='fas fa-trash'></i>`
+	parent.insertBefore(a,null)
 }
 
 function uploadImg() {
@@ -127,7 +141,14 @@ function deleteAlbum(event) {
 	event.preventDefault()
 	let id = event.target.parentElement.id
 	
-	console.log(id);
+	request('POST', `albums/${id}/delete`, JSON.stringify({}), (err, res) => {
+		if(err)	{
+			alert(err.error)
+			return
+		}
+		console.log("Album deleted")
+		document.getElementById(id).remove()
+	})
 	
 }
 
@@ -151,7 +172,6 @@ function deleteImg(event) {
 		}
 		console.log("Image deleted")
 		removeImgElement(event)
-		return
 	});
 }
 
@@ -179,6 +199,7 @@ function uploadImgs() {
 		request("POST", path, JSON.stringify({ imgsBatch }), function (err, res) {
 			if(err)	{
 				alert(err.error)
+				loaded()
 				return
 			}
 			console.log("Image added", res.data)
@@ -188,7 +209,6 @@ function uploadImgs() {
 				clearPrevImgs()
 				loaded()
 			}
-			return
 		});
 		sliceCount += 5
 		imgsBatch = imgs.slice(sliceCount, sliceCount + 5)

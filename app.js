@@ -7,7 +7,6 @@ const express = require('express'),
     request = require('request'),
     albums = require('./routes/albums'),
     album = require('./routes/album')
-    newAlbum = require('./routes/newAlbum')
    
 require('dotenv').config()
 
@@ -37,8 +36,10 @@ app.engine('hbs', hbs({
 app.set( 'view engine', 'hbs' );
 
 // routes
-app.use('/', albums)
+app.get('/',function(req,res) {
+  res.redirect('/albums');
+});
+app.use('/albums', albums)
 app.use('/album/', album)
-app.use('/create-album', newAlbum)
 
 app.listen(port, () => console.log(`App listening to port ${port}`))
