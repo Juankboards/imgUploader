@@ -1,9 +1,9 @@
 function addImgDb(db, id, imgName) {
-	return db.collection("folders").findOneAndUpdate({ "_id": id}, { $push: { "photos": `https://s3.amazonaws.com/czaudiovisual/${imgName}` } }, { returnOriginal: false })
+	return db.collection("folders").findOneAndUpdate({ "_id": id}, { $push: { "photos": `${process.env.IMG_DB_SERVICE}czaudiovisual/${imgName}` } }, { returnOriginal: false })
 }
 
 function delImgDb(db, id, img) {
-	return db.collection("folders").updateOne({ "_id": id}, { $pull: { "photos": `https://s3.amazonaws.com/${img}` } })
+	return db.collection("folders").updateOne({ "_id": id}, { $pull: { "photos": img } })
 }
 
 function getAlbum(db, id) {

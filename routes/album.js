@@ -19,8 +19,9 @@ router.get('/:id', async (req, res, next) => {
 router.post('/:id/delete', function (req, res, next) {
 	let db = res.locals.client.db('czaudiovisual')
 	let id = ObjectId(req.params.id)
-	let img = req.body.imgPath
-	delImgS3(img)
+	let img = req.body.img
+	let imgS3Path = img.split(process.env.IMG_DB_SERVICE)[1]
+	delImgS3(imgS3Path)
 		.then( data => {
 			delImgDb(db, id, img)
 				.then(status => {
@@ -53,7 +54,7 @@ router.post('/:id/add', async (req, res, next) => {
 	promises = imgs.map(async imgData => {
 		let imgType = imgData.split(";")[0].split("/")[1],
 			imgName = documentName + "/img_" + Date.now() + "_" + Math.random().toString().split(".")[1]
-		added.push({ data: imgData, name: `https://s3.amazonaws.com/czaudiovisual/${imgName}`})
+		added.push({ data: imgData, name: `${process.env.IMG_DB_SERVICE}czaudiovisual/${imgName}`})
 		
 		
 		try {

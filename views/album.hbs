@@ -81,8 +81,8 @@
 
 <section>
 	<h1>{{ album.name }}</h1>
-	<input onchange="loadImage(event)" id="files" type="file" multiple/>
-	<button onclick="uploadImg(event)" id="select-images">Upload Images</button>
+	<input onchange="loadImgs(event)" id="files" type="file" multiple/>
+	<button onclick="openBrowseWindow(event)" id="select-images">Upload Images</button>
 	<button onclick="clearPrevImgs()" type="button" id="clear">Clear</button>
 	<output id="result"></output>
 	<button onclick="uploadImgs()" type="button" id="upload-imgs">Upload</button>
@@ -90,8 +90,8 @@
 	<div id="album">
 		{{#each album.photos as |photo|}}
 		  <div class="photo">
+				<i onclick="deleteImg(event)" class="fas fa-trash"></i>
 		  	<img src="{{ photo }}" />
-		  	<i onclick="deleteImg(event)" class="fas fa-trash"></i>
 		  </div>
 		{{/each}}
 	</div>

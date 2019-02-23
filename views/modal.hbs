@@ -44,7 +44,7 @@
 	#modal .modal-content input {
 		height: 40px;
 	}
-	#modal .modal-content button {
+	#modal .modal-content input[type='submit'] {
 		height: 45px;
 		width: 70%;
 		max-width: 150px;
@@ -54,18 +54,19 @@
 		color: #f0f0f0;
 		font-size: 18px;
 		cursor: pointer;
+		padding: 0;
 	}
-	#modal .modal-content button:hover {
+	#modal .modal-content input[type='submit']:hover {
 		background-color: #7f7f7f;
 		color: #0f0f0f;
 	}
 </style>
 
-<div id="modal">
+<div id="modal" onclick="closeModal()">
 	<i onclick="closeModal()" class="fas fa-times"></i>
-	<div class="modal-content">	
-		<input type="text" id="album-input-name" placeholder="Album Name">
-		<textarea id="album-input-description" placeholder="Album Description"></textarea>
-		<button onclick="createAlbum()">CREATE</button>
-	</div>
+	<form onclick="event.stopPropagation()" onsubmit="createAlbum(event)" id="new-album-form" class="modal-content">	
+		<input type="text" id="album-input-name" name="album-name" placeholder="Album Name" required/>
+		<textarea id="album-input-description" name="album-description" placeholder="Album Description" required></textarea>
+		<input type="submit" value="CREATE" />
+	</form>
 </div>

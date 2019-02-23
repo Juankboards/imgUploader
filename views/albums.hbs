@@ -9,7 +9,7 @@
 		width: 33%;
 		max-width: 350px;
 		position: relative;
-		cursor: auto;
+		cursor: default;
 		margin: 5px;
 	}
 	#albums .album h2 {
@@ -39,6 +39,7 @@
 	    color: #f0f0f0;
 	    font-size: 25px;
 	    cursor: pointer;
+			z-index: 100000;
 	}
 	#albums .album i:hover {
 		color: #af0e40;
@@ -55,7 +56,8 @@
 		  	{{#if album.photos.[0]}}
 		  		<img src="{{ album.photos.[0] }}" alt="{{ album.name }} image" />
 		  	{{else}}
-		  		<img src="https://via.placeholder.com/350/5F5F5F/F0F0F0?text=No Images Jet" alt="{{ album.name }} image" />
+		  		<img src="https://images.homedepot-static.com/productImages/b629ec8f-b170-4973-bdcf-447b80dc447e/svn/platinum-matte-formica-laminate-sheets-009021258512000-64_400_compressed.jpg" 
+						alt="{{ album.name }} image" />
 		  	{{/if}}
 				<i onclick="deleteAlbum(event)" class="fas fa-trash"></i>
 		  </a>

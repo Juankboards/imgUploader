@@ -1,256 +1,270 @@
-var imgCounter = 0
-var uploadingCounter = 0
-
-if(window.location.pathname === "/") window.location.replace("/albums");
+// initial requirements
+	if(window.location.pathname === "/") window.location.replace("/albums");
 
 
-Element.prototype.remove = function() {
-    this.parentElement.removeChild(this);
-}
 
-function openModal() {
-	document.getElementById("modal").style.display = "block"
-}
-
-function closeModal() {
-	document.getElementById("modal").style.display = "none"
-}
-
-function createAlbum() {
-	var name = document.getElementById("album-input-name").value.toLowerCase(),
-		description = document.getElementById("album-input-description").value
-
-	if (!name || !description) {
-		alert("Missing info!")
-		return false;
+// utils functions
+	Element.prototype.remove = function() {
+			this.parentElement.removeChild(this);
 	}
 
-	request("POST", "albums/add", JSON.stringify({ "name": name, "description": description }), (err, res) => {
-		closeModal()
-		if(err)	{
-			alert(err.error)
-			return
-		}
-		addAlbum(res.data)		
-	});
-}
-
-function addAlbum(album) {
-	let parent = document.getElementById("albums")
-	var a = document.createElement("a")
-	a.className = "album"  
-	a.id = album._id
-	a.href =`album/${album._id}`
-	a.innerHTML = `<h2>${ album.name }</h2>
-					<img src='https://via.placeholder.com/350/5F5F5F/F0F0F0?text=No Images Jet' alt='${ album.name } image' />
-          <i onclick='deleteAlbum(event)' class='fas fa-trash'></i>`
-	parent.insertBefore(a,null)
-}
-
-function uploadImg() {
-	document.getElementById("files").click()
-}
-
-function request(type, url, info, callback) {
-	var req = new XMLHttpRequest();      
-	req.open(type, url, true);
-	req.onreadystatechange = function () {
-		if (this.readyState == 4) {
-			if (this.status >= 200 && this.status < 300) {
-			  callback(undefined, JSON.parse(this.responseText))
-			  return
-			} 
-			callback(JSON.parse(this.responseText), undefined)
-		}
-	};
-
-	if(type == 'POST') {
-		req.setRequestHeader("Content-type", "application/json")
-		req.send(info)
-	} else {
-		req.send()
-	}
-}
-
-function loadImage(event) {
-	var showingResults = false
-  var output = document.getElementById("result")
-  var imgs = event.target.files
-  Object.values(imgs).forEach(function (img) {
-  	loading();
-  	if(img.type.match('image.*')){ 
-  		if (!showingResults) {
-  			document.getElementById("result").style.display = "flex"
-  			document.getElementById("clear").style.display = "inline-block"
-  			document.getElementById("upload-imgs").style.display = "block"
-  			showingResults = true
-  		}
-  		var display  = new FileReader()
-  		addEvent(display, "loadend", imageLoaded.bind(null, output, imgs.length))
-  		display.readAsDataURL(img)
-  	} else {
-  		alert("You can only upload image files");
-  	}
-  })
-}
-
-function loading() {
-	document.getElementById("select-images").disabled = true
-	document.getElementById("clear").disabled = true
-  document.getElementById("upload-imgs").disabled = true
-}
-
-function loaded() {
-	document.getElementById("select-images").disabled = false
-	document.getElementById("clear").disabled = false
-  document.getElementById("upload-imgs").disabled = false
-}
-
-function imageLoaded(output, length, event) {
-	imgCounter++
-	var picFile = event.target;
-  var div = document.createElement("div")
-  div.className = "thumbnail-wrapper"  
-  div.innerHTML = "<img id='" + picFile.result.slice(27, 97) + "' class='thumbnail' src='" + picFile.result + "'" +
-          "title='preview image'/><i onclick='removeImgElement(event, true)' class='fas fa-trash'></i>"
-  output.insertBefore(div,null)
-  if (imgCounter==length) {
-  	imgCounter = 0
-  	loaded()
-  }
-}
-
-function clearPrevImgs() {
-  document.getElementById("result").innerHTML = ""
-  document.getElementById("clear").style.display = "none"
-  document.getElementById("result").style.display = "none"
-  document.getElementById("upload-imgs").style.display = "none"
-}
-
-function removeImgElement(event, prevImg) {
-	event = crossEvent(event)
-	event.target.parentNode.remove()
-	if(prevImg) checkOutput()
-}
-
-function checkOutput() {
-	if(!document.getElementById("result").childNodes.length) clearPrevImgs()
-}
-
-function deleteAlbum(event) {
-	event.preventDefault()
-	let id = event.target.parentElement.id
-	
-	request('POST', `albums/${id}/delete`, JSON.stringify({}), (err, res) => {
-		if(err)	{
-			alert(err.error)
-			return
-		}
-		console.log("Album deleted")
-		document.getElementById(id).remove()
-	})
-	
-}
-
-function deleteImg(event) {
-	var img = event.target.parentNode.firstElementChild
-
-	if(!img.tagName==="IMG") {
-		alert("You only can delete images")
-		return
+	function polyfillEvent(event) {
+		return (event || window.event)
 	}
 
-	let imgName = img.src
-	let imgPath = imgName.split("https://s3.amazonaws.com/")[1]
-
-	let path = `${window.location.pathname}/delete`
-	console.log(path);
-	request("POST", path, JSON.stringify({ imgPath }), function (err, res) {
-		if(err)	{
-			alert(err.error)
-			return
-		}
-		console.log("Image deleted")
-		removeImgElement(event)
-	});
-}
-
-function addEvent (element, type, fn) {
-  element.addEventListener(type, function (event) {
-    fn(crossEvent(event));
-  })
-}
-
-function uploadImgs() {
-	let sliceCount = 0
-	let imgs = []
-	let path = `${window.location.pathname}/add`
-	let children = document.getElementById("result").children
-	
-	for(let i = 0; i < children.length; i++) {
-		imgs.push(children[i].firstElementChild.src);
-	}
-
-	let imgsBatch = imgs.slice(0, 5)
-
-	while (imgsBatch.length && sliceCount < 50) {
-		uploadingCounter++
-		loading()
-		request("POST", path, JSON.stringify({ imgsBatch }), function (err, res) {
-			if(err)	{
-				alert(err.error)
-				loaded()
-				return
+	function request(type, url, info = {}) {
+		return new Promise((resolve, reject) => {
+			let req = new XMLHttpRequest();      
+			req.open(type, url, true);
+			req.onreadystatechange = function () {
+				if (this.readyState == 4) {
+					if(this.status >= 200 && this.status < 300)
+						resolve(JSON.parse(this.responseText).data)
+					reject(JSON.parse(this.responseText).error)
+				}
 			}
-			console.log("Image added", res.data)
-			removeUploadedImg(res.data, document.getElementById("album"))
-			uploadingCounter--
-			if(!uploadingCounter) {
+			if(type == 'POST') {
+				req.setRequestHeader("Content-type", "application/json")
+				req.send(JSON.stringify(info))
+			} else {
+				req.send()
+			}
+		})
+	}
+
+	function createDOMElement({ type, attributes, innerHTML }) {
+		let element = document.createElement(type)
+		element.innerHTML = innerHTML || ""  
+		for(let attr in attributes) {
+			element[attr] = attributes[attr]
+		}
+		return element
+	}
+
+
+
+// request functions
+
+	// album functions
+		function createAlbum(event) {
+			event = polyfillEvent(event) //check how to avoid this pollyfill in every event function
+			event.preventDefault()
+			const  name = event.target.elements["album-name"].value
+			const	description = event.target.elements["album-description"].value
+
+			request("POST", "albums/add", { name, description })
+				.then(data => {
+					closeModal()
+					addAlbum(data)
+				}).catch(err => {
+					alert(err) //should change for an error catcher function
+				})
+		}
+
+		function deleteAlbum(event) {
+			event = polyfillEvent(event)
+			event.preventDefault()
+			const id = event.target.parentElement.id
+			
+			request("POST", `albums/${id}/delete`)
+				.then(() => {
+					document.getElementById(id).remove()
+				}).catch(err => {
+					alert(err) //should change for an error catcher function
+				})
+		}
+
+	// image functions
+		function uploadImgs() {
+			let imgs = Array.from(document.getElementById("result").children).map(child => child.lastElementChild.src)
+			if(!imgs.length) return
+			loading()
+			uploadImgBatch(imgs)			
+		}
+
+		function uploadImgBatch(imgs) {
+			let imgsBatch = imgs.splice(0, 5)
+			let container = document.getElementById("album")
+			if(!imgsBatch.length) return
+			request("POST", `${window.location.pathname}/add`, { imgsBatch })
+				.then(data => {
+					handleUploadedImgs(data, container)
+				}).catch(err => {
+					alert(err)
+				}).finally(() => {
+					checkUploadImgsStatus()
+				})
+			uploadImgBatch(imgs)
+		}
+
+		function checkUploadImgsStatus(remaining) {
+			checkContainer(loaded)
+		}
+
+		function deleteImg(event) {
+			event = polyfillEvent(event)
+			const img = event.target.nextElementSibling.src
+			request("POST", `${window.location.pathname}/delete`, { img })
+				.then(() => {
+					removeImgElement(event)
+				}).catch(err => {
+					alert(err)
+				})
+		}
+
+
+
+//interface functions
+	// loading
+		function loading() {
+			document.getElementById("select-images").disabled = true
+			document.getElementById("clear").disabled = true
+			document.getElementById("upload-imgs").disabled = true
+		}
+
+		function loaded() {
+			document.getElementById("select-images").disabled = false
+			document.getElementById("clear").disabled = false
+			document.getElementById("upload-imgs").disabled = false
+		}
+
+	// modal
+		function openModal() {
+			document.getElementById("modal").style.display = "block"
+		}
+
+		function closeModal() {
+			document.getElementById("modal").style.display = "none"
+			document.getElementById("new-album-form").reset()
+		}
+
+	// album functions
+		function addAlbum(album) {			
+			let parent = document.getElementById("albums")
+			let newAlbum = createDOMElement({
+				type: "a",
+				attributes: {
+					className: "album",
+					id: album._id,
+					href: `album/${album._id}`
+				},
+				innerHTML: `<h2>${ album.name }</h2>` +
+										`<i onclick='deleteAlbum(event)' class='fas fa-trash'></i>` +
+										`<img src='https://via.placeholder.com/350/5F5F5F/F0F0F0?text=No Images Jet' alt='${ album.name } image' />`
+			})			
+			parent.insertBefore(newAlbum, null)
+		}
+
+	// image functions
+		function openBrowseWindow() {
+			document.getElementById("files").click()
+		}
+
+		function loadImgs(event) {
+			event = polyfillEvent(event)
+			let container = document.getElementById("result")
+			let { imgs, errors } = filterImgsSelection(event.target.files)
+			if(imgs.length) {
+				diplayPrevImgs()
+				loading();
+				readImgs(imgs, container)
+			}
+			showSelectedImgsErrors(errors)
+		}
+
+		function filterImgsSelection(imgsSelected) {
+			return Object.values(imgsSelected).reduce((results, file) => {				
+				if(file.type && file.type.match('image.*')) results.imgs.push(file)
+				else results.errors.push({name: file.name, type: file.type})
+				return results
+			}, { imgs: [], errors: [] })
+		}
+
+		function readImgs(imgs, container) {
+			if(!imgs.length) return
+			let img = imgs.shift()
+			let display  = new FileReader()
+			display.addEventListener("loadend", imageLoaded.bind(null, container, imgs.length))
+			display.readAsDataURL(img)
+			readImgs(imgs, container)
+		}
+
+		function diplayPrevImgs() {
+			document.getElementById("result").style.display = "flex"
+			document.getElementById("clear").style.display = "inline-block"
+			document.getElementById("upload-imgs").style.display = "block"
+		}
+
+		function imageLoaded(container, remainingFiles, event) {
+			let picFile = event.target;
+			let prevImg = createDOMElement({
+				type: "div",
+				attributes: {
+					className: "thumbnail-wrapper" 
+				},
+				innerHTML: `<i onclick='removeImgElement(event, true)' class='fas fa-trash'></i>` +
+										`<img id='${picFile.result.slice(27, 97)}' class='thumbnail' src='${picFile.result}' title='preview image' />`
+										
+			})
+			container.insertBefore(prevImg, null)
+			if (!remainingFiles) {
+				loaded()
+				checkContainer()
+			}
+		}
+
+		function showSelectedImgsErrors(errors) {
+			if(!errors.length) return
+			let errorStr = "You tried to upload a wrong type of file:\n"
+			errors.forEach(error => {
+				errorStr += `--------------------\n` +
+										`Name: ${error.name} \n` +
+										`Type: ${error.type}\n`
+			})
+			alert(errorStr)
+		}
+
+		function clearPrevImgs() {
+			document.getElementById("result").innerHTML = ""
+			document.getElementById("clear").style.display = "none"
+			document.getElementById("result").style.display = "none"
+			document.getElementById("upload-imgs").style.display = "none"
+		}
+
+		function removeImgElement(event, prevImg) {
+			event = polyfillEvent(event)
+			event.target.parentNode.remove()
+			if(prevImg) checkContainer()
+		}
+
+		function checkContainer(fn) {
+			if(!document.getElementById("result").childElementCount) {
+				fn()
 				clearPrevImgs()
-				loaded()
 			}
-		});
-		sliceCount += 5
-		imgsBatch = imgs.slice(sliceCount, sliceCount + 5)
-	}
-}
+		}
 
-function removeUploadedImg(imgs, parent) {
-	imgs.forEach(img => {		
-		var div = document.createElement("div")
-  		div.className = "photo"  
-  		div.innerHTML = '<img src="' + img.name + '" />\
-			<i onclick="deleteImg(event)" class="fas fa-trash"></i>'
-		parent.insertBefore(div,null)
-		document.getElementById(img.data.slice(27, 97)).remove()
-	})
-}
+		function removeUploadedImg(img) {				
+			document.getElementById(img.data.slice(27, 97)).parentNode.remove()
+		}
 
-function crossEvent(event) {
-	if (!event)
-		event = window.event
-	return event
-}
+		function showUploadedImgs(img, container) {
+			let newImg = createDOMElement({
+				type: "div",
+				attributes: {
+					className: "photo"  
+				},
+				innerHTML: `<i onclick='deleteImg(event)' class='fas fa-trash'></i>` + 
+										`<img src='${img.name}' />`
+										
+			})
+			container.insertBefore(newImg,null)
+		}
 
-
-
-// });
-// }
-// else
-// {
-// console.log(“Your browser does not support File API”);
-// }
-// }
-
-// $(‘#files’).live(“click”, function() {
-// $(‘.thumbnail’).parent().remove();
-// $(‘result’).hide();
-// $(this).val(“”);
-// });
-
-// $(‘#clear’).live(“click”, function() {
-// $(‘.thumbnail’).parent().remove();
-// $(‘#result’).hide();
-// $(‘#files’).val(“”);
-// $(this).hide();
-// });
+		function handleUploadedImgs(imgs, container) {
+			if(!imgs.length) return
+			let img = imgs.shift()
+			removeUploadedImg(img)
+			showUploadedImgs(img, container)
+			handleUploadedImgs(imgs, container)
+		}
