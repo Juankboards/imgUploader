@@ -4,7 +4,7 @@ const express = require('express'),
 	compression = require('compression'),
     bodyParser = require('body-parser'),
     hbs = require('express-handlebars'),
-    request = require('request'),
+    home = require('./routes/home'),
     albums = require('./routes/albums'),
     album = require('./routes/album')
    
@@ -36,9 +36,7 @@ app.engine('hbs', hbs({
 app.set( 'view engine', 'hbs' );
 
 // routes
-app.get('/',function(req,res) {
-  res.redirect('/albums');
-});
+app.get('/', home)
 app.use('/albums', albums)
 app.use('/album/', album)
 

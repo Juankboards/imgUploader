@@ -1,8 +1,3 @@
-// initial requirements
-	if(window.location.pathname === "/") window.location.replace("/albums");
-
-
-
 // utils functions
 	Element.prototype.remove = function() {
 			this.parentElement.removeChild(this);
