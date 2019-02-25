@@ -18,6 +18,7 @@
 					reject(JSON.parse(this.responseText).error)
 				}
 			}
+			req.withCredentials = true
 			if(type == 'POST') {
 				req.setRequestHeader("Content-type", "application/json")
 				req.send(JSON.stringify(info))
@@ -36,26 +37,64 @@
 		return element
 	}
 
+	function submitForm(event) {
+		event = polyfillEvent(event)
+		event.preventDefault()
+		let form = event.target.parentNode
+		let errorContainer = document.getElementById("form-errors")
+		validateForm(form, errorContainer)
+		if(errorContainer.childElementCount) return 
+		const info = formatFormInfo(form)
+		const path = formPath(form)
+		sendForm(info, path)
+	}
 
+	function formPath(form) {
+		switch(form.className) {
+			case "user":
+				let path = form.id==="signup-form"? "signup" : "login"
+				return path
+			case "album":
+				return "albums/add"
+		}
+	}
+
+	function formatFormInfo(form) {
+		switch(form.className) {
+			case "user":
+				return { email: form.elements["email"].value, password: form.elements["password"].value }
+			case "album":
+				return { name: form.elements["album"].value, description: form.elements["description"].value }
+		}
+	}
+
+	function validateForm(form, errorContainer) {
+		errorContainer.innerHTML = ""
+		Array.from(form.elements).forEach(elm => {
+			let message = elm.validationMessage
+			if (message) showFormError(`${elm.name[0].toUpperCase()}${elm.name.slice(1)}: ${message}`, errorContainer)
+		})
+		if(form.elements["repeat password"] && form.elements["password"].value!==form.elements["repeat password"].value) showFormError("Password confirmation should be equal to password", errorContainer)
+	}
+
+	function resolveFormSubmit(type, data) {
+		switch(type) {
+			case "login":
+				window.location.pathname = "/albums"
+				break
+			case "signup":
+				alert("User created, login with your email")
+				location.reload()
+				break
+			case "albums/add":
+				closeModal()
+				addAlbum(data)
+				break				
+		}
+	}
 
 // request functions
-
 	// album functions
-		function createAlbum(event) {
-			event = polyfillEvent(event) //check how to avoid this pollyfill in every event function
-			event.preventDefault()
-			const  name = event.target.elements["album-name"].value
-			const	description = event.target.elements["album-description"].value
-
-			request("POST", "albums/add", { name, description })
-				.then(data => {
-					closeModal()
-					addAlbum(data)
-				}).catch(err => {
-					alert(err) //should change for an error catcher function
-				})
-		}
-
 		function deleteAlbum(event) {
 			event = polyfillEvent(event)
 			event.preventDefault()
@@ -107,7 +146,15 @@
 				})
 		}
 
-
+		// session
+		function sendForm(data, path) {
+			request("POST", path, data)
+				.then(data => {
+					resolveFormSubmit(path, data)
+				}).catch(err => {
+					alert(err)
+				})
+		}
 
 //interface functions
 	// loading
@@ -145,7 +192,7 @@
 				},
 				innerHTML: `<h2>${ album.name }</h2>` +
 										`<i onclick='deleteAlbum(event)' class='fas fa-trash'></i>` +
-										`<img src='https://via.placeholder.com/350/5F5F5F/F0F0F0?text=No Images Jet' alt='${ album.name } image' />`
+										`<img src='https://images.homedepot-static.com/productImages/b629ec8f-b170-4973-bdcf-447b80dc447e/svn/platinum-matte-formica-laminate-sheets-009021258512000-64_400_compressed.jpg' alt='${ album.name } image' />`
 			})			
 			parent.insertBefore(newAlbum, null)
 		}
@@ -208,7 +255,7 @@
 			}
 		}
 
-		function showSelectedImgsErrors(errors) {
+		function handleActionErrors(errors) {
 			if(!errors.length) return
 			let errorStr = "You tried to upload a wrong type of file:\n"
 			errors.forEach(error => {
@@ -262,4 +309,36 @@
 			removeUploadedImg(img)
 			showUploadedImgs(img, container)
 			handleUploadedImgs(imgs, container)
+		}
+
+		function toggleForm(event) {
+			event = polyfillEvent(event)
+			let clickedForm = event.target.parentNode.parentNode
+			let siblingForm = clickedForm.nextElementSibling || clickedForm.previousElementSibling
+			clickedForm.style.display = "none"
+			siblingForm.style.display = "block"			
+		}
+
+		function inputFocus(event) {
+			event = polyfillEvent(event)
+			let container = event.target.parentNode
+			let containerClass = [...container.className.split(" "), "input-focus"]
+			container.className = containerClass.join(" ")
+		}
+
+		function inputBlur(event) {
+			event = polyfillEvent(event)
+			let container = event.target.parentNode
+			let containerClass = container.className.split(" ").filter(classStr => {
+				if(classStr!=="input-focus") return true
+			})			
+			container.className = containerClass.join(" ")
+		}
+
+		function showFormError(error, errorContainer) {
+			let newError = createDOMElement({
+				type: "p",
+				innerHTML: error
+			})	
+			errorContainer.insertBefore(newError, null)
 		}

@@ -52,11 +52,36 @@ function delAlbumDb(db, id) {
         })
 }
 
+function getUserByEmail(db, email) {
+    return db.collection("users").findOne(email)
+        .then(user => {
+            return user || {}
+        })
+        .catch(err => {
+            console.log(err)
+            return {}
+        })
+}
+
+function addUser(db, user) {
+    return db.collection('users').insertOne(user)
+        .then(result => {
+            if(result.insertedId ) return result.insertedId
+            throw ('Non user inserted')
+        })
+        .catch(err => {
+            console.log(err)
+            return false
+        })
+}
+
 module.exports = {
     addImgDb,
     delImgDb,
     getAlbum,
     getAlbums,
     addAlbum,
-    delAlbumDb
+    delAlbumDb,
+    getUserByEmail,
+    addUser
 }

@@ -15,7 +15,6 @@ router.post('/add', async (req, res, next) => {
 	let db = res.locals.client.db('czaudiovisual')
 	let album = req.body;
 	album.photos = []
-	album.created = new Date().getTime()
 	album.id = await addAlbum(db, album).str
 	if(!album._id) {
 		res.status(502).json({ error: "Could't add album"})

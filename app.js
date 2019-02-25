@@ -2,29 +2,33 @@ const express = require('express'),
 	MongoClient = require('mongodb').MongoClient,
 	path = require('path'),
 	compression = require('compression'),
-    bodyParser = require('body-parser'),
-    hbs = require('express-handlebars'),
-    home = require('./routes/home'),
-    albums = require('./routes/albums'),
-    album = require('./routes/album')
-   
+  cookieParser = require('cookie-parser'),
+  passport = require('passport'),
+  hbs = require('express-handlebars'),
+  passportConfig =require('./config/passport'),
+  home = require('./routes/home'),
+  albums = require('./routes/albums'),
+  album = require('./routes/album')
+  
 require('dotenv').config()
 
 const port = process.env.PORT || 8080,
 	app = express()
 
 
+// app.use(passport.initialize())
 app.use(function(req, res, next) {
 	MongoClient.connect(process.env.DB_CONNECTION, { useNewUrlParser: true }, (err, client) => {
-		if (err)
-			console.log(err)
+		if (err) return console.log(err)
+    passportConfig(client.db('czaudiovisual'), passport)
 		res.locals.client = client
-	    next();
+	  next();
 	})
 });
+app.use(cookieParser())
 app.use(compression())
-app.use(bodyParser.json({limit: '100mb'}));
-app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb', extended:false }));
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.engine('hbs', hbs({ 
@@ -36,8 +40,8 @@ app.engine('hbs', hbs({
 app.set( 'view engine', 'hbs' );
 
 // routes
-app.get('/', home)
-app.use('/albums', albums)
-app.use('/album/', album)
+app.use('/', home)
+app.use('/albums', passport.authenticate('jwt', { session: false }), albums)
+app.use('/album', passport.authenticate('jwt', { session: false, failureRedirect: "/" }), album)
 
 app.listen(port, () => console.log(`App listening to port ${port}`))
