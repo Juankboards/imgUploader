@@ -10,7 +10,7 @@ const express = require('express'),
   albums = require('./routes/albums'),
   album = require('./routes/album')
   
-require('dotenv').config()
+if(!process.env.NODE_ENV) require('dotenv').config()
 
 const port = process.env.PORT || 8080,
 	app = express()

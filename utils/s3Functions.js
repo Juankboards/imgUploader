@@ -1,6 +1,6 @@
 const aws = require('aws-sdk')
 
-require('dotenv').config()
+if(!process.env.NODE_ENV) require('dotenv').config()
 
 aws.config.region = process.env.S3_ZONE
 aws.config.accessKeyId = process.env.S3_ACCESS_KEY
