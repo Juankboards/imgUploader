@@ -4,11 +4,11 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "node myapp.js",
+		"start": "node app.js",
 		"test": "standard && jest --coverage"
 	},
 	"engines": {
-		"node": "6.2.0"
+		"node": "11.4.0"
 	},
 	"author": "juankboards",
 	"license": "ISC",
