@@ -3,7 +3,7 @@ const JWTStrategy  = require('passport-jwt').Strategy,
     bcrypt = require('bcrypt'),
     { getUserByEmail } = require('./../utils/dbFunctions')
 
-    require('dotenv').config()
+if(!process.env.NODE_ENV) require('dotenv').config()
 
 function cookieExtractor(req) {
     let token = (req && req.cookies)? req.cookies['jwt'] : undefined
