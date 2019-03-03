@@ -1,14 +1,14 @@
 function addImgDb(db, id, imgName) {
-	return db.collection("folders").findOneAndUpdate({ "_id": id}, { $push: { "photos": `${process.env.IMG_DB_SERVICE}czaudiovisual/${imgName}` } }, { returnOriginal: false })
+	return db.collection("folders").findOneAndUpdate({ "_id": id }, { $push: { "photos": `${process.env.IMG_DB_SERVICE}czaudiovisual/${imgName}` } }, { returnOriginal: false })
 }
 
 function delImgDb(db, id, img) {
-	return db.collection("folders").updateOne({ "_id": id}, { $pull: { "photos": img } })
+	return db.collection("folders").updateOne({ "_id": id }, { $pull: { "photos": img } })
 }
 
 function getAlbum(db, id) {
-    return db.collection("folders").findOne({ "_id": id})
-        .then(album => {
+    return db.collection("folders").findOne({ "_id": id })
+        .then(album => {            
             return album
         })
         .catch(err => {
@@ -34,10 +34,6 @@ function addAlbum(db, album) {
             if(result.insertedId ) return true
             throw ('Non album inserted')
         })
-        .catch(err => {
-            console.log(err)
-            return false
-        })
 }
 
 function delAlbumDb(db, id) {
@@ -45,10 +41,6 @@ function delAlbumDb(db, id) {
         .then(result => {
             if(result.deletedCount ) return true
             throw ('Non album deleted')
-        })
-        .catch(err => {
-            console.log(err)
-            return false
         })
 }
 
@@ -69,19 +61,24 @@ function addUser(db, user) {
             if(result.insertedId ) return result.insertedId
             throw ('Non user inserted')
         })
-        .catch(err => {
-            console.log(err)
-            return false
-        })
+}
+
+function addAlbumFromUser(db, userId, albumId) {
+    return db.collection('users').updateOne({ "_id": userId}, { $push: { "albums": albumId.toString() } })
+}
+
+function removeAlbumFromUser(db, userId, albumId) {
+    return db.collection('users').updateOne({ "_id": userId}, { $pull: { "albums": albumId.toString() } })
 }
 
 module.exports = {
     addImgDb,
     delImgDb,
     getAlbum,
-    getAlbums,
     addAlbum,
     delAlbumDb,
     getUserByEmail,
-    addUser
+    addUser,
+    addAlbumFromUser,
+    removeAlbumFromUser
 }

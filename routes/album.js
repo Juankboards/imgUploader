@@ -22,19 +22,14 @@ router.post('/:id/delete', function (req, res, next) {
 	let img = req.body.img
 	let imgS3Path = img.split(process.env.IMG_DB_SERVICE)[1]
 	delImgS3(imgS3Path)
-		.then( data => {
-			delImgDb(db, id, img)
-				.then(status => {
-						res.locals.client.close()
-						res.status(200).json({ message: "Image deleted"})
-				}).catch(err => {
-					res.locals.client.close()
-					res.status(400).json({ error: err })
-				})
-		}) .catch(err => {
-			res.status(400).json({ message: err })
-		})
-		
+	.then(() => delImgDb(db, id, img))
+	.then(() => {
+		res.locals.client.close()
+		res.status(200).json({ message: "Image deleted"})
+	}).catch(err => {
+		res.locals.client.close()
+		res.status(400).json({ error: err })
+	})	
 })
 
 router.post('/:id/add', async (req, res, next) => {

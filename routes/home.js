@@ -30,13 +30,12 @@ router.post('/login', (req, res, next) => {
 
 router.post('/signup', async (req, res, next) => {
 	let db = res.locals.client.db('czaudiovisual')
-	let user = { email: req.body.email.toLowerCase(), password: req.body.password }
-	console.log(user);
+	let user = { email: req.body.email.toLowerCase(), password: req.body.password, albums: [] }
 	
 	try {
 		user.password = await bcrypt.hash(user.password, 10)
 		await addUser(db, user)
-		if(!user._id) return res.status(502).json({ error: "Could't register user"})
+		if(!user._id) throw ("Could't register user")
 		delete user.password
 		res.status(201).json({ data: user})
 	} catch (error) {

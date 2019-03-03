@@ -16,7 +16,6 @@ const port = process.env.PORT || 8080,
 	app = express()
 
 
-// app.use(passport.initialize())
 app.use(function(req, res, next) {
 	MongoClient.connect(process.env.DB_CONNECTION, { useNewUrlParser: true }, (err, client) => {
 		if (err) return console.log(err)

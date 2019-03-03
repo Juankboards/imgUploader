@@ -1,4 +1,15 @@
 <style>
+	button {
+		border-radius: 50px;
+		width: 80%;
+		max-width: 150px;
+		height: 30px;
+		color: #fcfcfc;
+		font-size: 1.05rem;
+		background-color: #0EADFF;
+		border: 1px transparent;
+		cursor: pointer;
+	}
 	#album {
 		display: flex;
 		justify-content: left;
@@ -47,11 +58,14 @@
 	.thumbnail {
 		width: 100px;
 	}
+	#clear {
+		background-color: #CC0E00;
+	}
 	#clear, #upload-imgs {
 		display:none;
 	}
 	#result {
-		border: 4px dotted #cccccc;
+		border: 4px dotted #0EADFF;
 		display: none;
 		margin:10px auto;
 		width: 100%;
@@ -82,7 +96,7 @@
 <section>
 	<h1>{{ album.name }}</h1>
 	<input onchange="loadImgs(event)" id="files" type="file" multiple/>
-	<button onclick="openBrowseWindow(event)" id="select-images">Upload Images</button>
+	<button onclick="openBrowseWindow(event)" id="select-images">Select Images</button>
 	<button onclick="clearPrevImgs()" type="button" id="clear">Clear</button>
 	<output id="result"></output>
 	<button onclick="uploadImgs()" type="button" id="upload-imgs">Upload</button>
