@@ -110,7 +110,10 @@
 
 	// image functions
 		function uploadImgs() {
-			let imgs = Array.from(document.getElementById("result").children).map(child => child.lastElementChild.src)
+			let imgs = Array.from(document.getElementById("result").children).map(child => {
+				waiting(child, child.lastElementChild)
+				return child.lastElementChild.lastElementChild.src
+			})
 			if(!imgs.length) return
 			loading()
 			uploadImgBatch(imgs)			
@@ -176,6 +179,16 @@
 			document.getElementById("select-images").disabled = false
 			document.getElementById("clear").disabled = false
 			document.getElementById("upload-imgs").disabled = false
+		}
+
+		function waiting(container, sibling) {
+			let newWaiting = createDOMElement({
+				type: "div",
+				attributes: {
+					className: "spinner waiting",
+				}
+			})			
+			container.insertBefore(newWaiting, sibling)
 		}
 
 	// modal
@@ -252,8 +265,8 @@
 				attributes: {
 					className: "thumbnail-wrapper" 
 				},
-				innerHTML: `<i onclick='removeImgElement(event, true)' class='fas fa-trash'></i>` +
-										`<img id='${picFile.result.slice(27, 97)}' class='thumbnail' src='${picFile.result}' title='preview image' />`
+				innerHTML: `<div class='prev-image'><i onclick='removeImgElement(event, true)' class='fas fa-trash trash'></i>` +
+										`<img id='${picFile.result.slice(27, 97)}' class='thumbnail' src='${picFile.result}' title='preview image' /></div>`
 										
 			})
 			container.insertBefore(prevImg, null)
@@ -283,8 +296,11 @@
 
 		function removeImgElement(event, prevImg) {
 			event = polyfillEvent(event)
+			if(prevImg) {
+				event.target.parentNode.parentNode.remove()
+				return checkContainer()
+			}
 			event.target.parentNode.remove()
-			if(prevImg) checkContainer()
 		}
 
 		function checkContainer(fn) {
@@ -295,7 +311,7 @@
 		}
 
 		function removeUploadedImg(img) {				
-			document.getElementById(img.data.slice(27, 97)).parentNode.remove()
+			document.getElementById(img.data.slice(27, 97)).parentNode.parentNode.remove()
 		}
 
 		function showUploadedImgs(img, container) {
