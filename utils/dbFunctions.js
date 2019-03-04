@@ -1,5 +1,5 @@
 function addImgDb(db, id, imgName) {
-	return db.collection("folders").findOneAndUpdate({ "_id": id }, { $push: { "photos": `${process.env.IMG_DB_SERVICE}czaudiovisual/${imgName}` } }, { returnOriginal: false })
+	return db.collection("folders").findOneAndUpdate({ "_id": id }, { $push: { "photos": `${process.env.IMG_DB_SERVICE}${process.env.DB_NAME}/${imgName}` } }, { returnOriginal: false })
 }
 
 function delImgDb(db, id, img) {
@@ -47,11 +47,8 @@ function delAlbumDb(db, id) {
 function getUserByEmail(db, email) {
     return db.collection("users").findOne(email)
         .then(user => {
-            return user || {}
-        })
-        .catch(err => {
-            console.log(err)
-            return {}
+            if(user.email ) return user
+            throw ('Incorrect Email')
         })
 }
 

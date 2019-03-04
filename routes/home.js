@@ -4,12 +4,11 @@ const express = require('express'),
 	bcrypt = require('bcrypt'),
 	jwt = require('jsonwebtoken'),
 	{ addUser } = require('./../utils/dbFunctions')
-	// ObjectId = require('mongodb').ObjectID
 
+router.get('/', passport.authenticate('jwt', { session: false, successRedirect: '/albums', failureRedirect: "/login" }))
 
-
-router.get('/', (req, res) => {
-	res.render('home')
+router.get('/login', (req, res) => {
+	res.render('login')
 })
 
 router.post('/login', (req, res, next) => {
@@ -29,7 +28,7 @@ router.post('/login', (req, res, next) => {
 })
 
 router.post('/signup', async (req, res, next) => {
-	let db = res.locals.client.db('czaudiovisual')
+	let db = res.locals.client.db(process.env.IMG_DB_NAME)
 	let user = { email: req.body.email.toLowerCase(), password: req.body.password, albums: [] }
 	
 	try {
@@ -42,5 +41,10 @@ router.post('/signup', async (req, res, next) => {
 		res.status(400).json({ error })
 	}
 })
+
+router.get('/logout', passport.authenticate('jwt', { session: false }), function(req, res) {
+    res.cookie('jwt', '', { httpOnly: true });
+    res.status(200).json({ data: 'signout' });
+}); 
 
 module.exports = router

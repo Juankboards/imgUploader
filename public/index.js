@@ -155,6 +155,14 @@
 					alert(err)
 				})
 		}
+		function logout() {
+			request("GET", `/logout`)
+			.then(() => {
+				window.location.pathname = "/"
+			}).catch(err => {
+				alert(err) //should change for an error catcher function
+			})
+		}
 
 //interface functions
 	// loading
@@ -211,7 +219,7 @@
 				loading();
 				readImgs(imgs, container)
 			}
-			showSelectedImgsErrors(errors)
+			handleActionErrors(errors)
 		}
 
 		function filterImgsSelection(imgsSelected) {

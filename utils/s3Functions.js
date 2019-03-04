@@ -12,7 +12,7 @@ function addImgS3({ imgData, imgName, imgType }) {
 	const imageBuffer = Buffer.from(imgData.split(",")[1], "base64")
 
 	return s3.upload({
-	  Bucket: "czaudiovisual",
+	  Bucket: process.env.S3_BUCKET,
     Key: imgName,
     Body: imageBuffer,
     ContentEncoding: 'base64',

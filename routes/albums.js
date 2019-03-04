@@ -5,14 +5,14 @@ const express = require('express'),
 	{ delImgS3 } = require('./../utils/s3Functions')
 
 router.get('/', async (req, res, next) => {
-	let db = res.locals.client.db('czaudiovisual')
+	let db = res.locals.client.db(process.env.IMG_DB_NAME)
 	let albums = await Promise.all(req.user.albums.map(async album => await getAlbum(db, ObjectId(album))))
 	res.locals.client.close()
 	res.render('albums', { albums })
 })
 
 router.post('/add', async (req, res, next) => {
-	let db = res.locals.client.db('czaudiovisual')
+	let db = res.locals.client.db(process.env.IMG_DB_NAME)
 	let album = req.body;
 	album.photos = []
 	try {
@@ -26,7 +26,7 @@ router.post('/add', async (req, res, next) => {
 })
 
 router.post('/:id/delete', async (req, res, next) => {
-	let db = res.locals.client.db('czaudiovisual')
+	let db = res.locals.client.db(process.env.IMG_DB_NAME)
 	let id = ObjectId(req.params.id)
 	try {
 		let album = await getAlbum(db, id)

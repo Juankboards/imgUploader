@@ -17,7 +17,6 @@ function passportConfig(db, passport) {
         }, async (email, password, done) => {
             try {
                 const user = await getUserByEmail(db, { email })
-                if(!user.email) return done("Incorrect Email")
                 const passwordsMatch = await bcrypt.compare(password, user.password)
                 if(!passwordsMatch) return done("Incorrect Password")
                 return done(null, user)
@@ -30,11 +29,15 @@ function passportConfig(db, passport) {
         jwtFromRequest: cookieExtractor,
         secretOrKey: process.env.JWT_SECRET,
     }, async (jwtPayload, done) => {
-        if (Date.now() > jwtPayload.expires) return done('jwt expired')
-        let user = await getUserByEmail(db, { email: jwtPayload.email })
-        if (!user.email) return done("Not user found with that email")
-        delete user.password
-        done(null, user)
+        try {
+            if (Date.now() > jwtPayload.expires) throw ('jwt expired')
+            let user = await getUserByEmail(db, { email: jwtPayload.email })
+            delete user.password
+            done(null, user)
+        } catch(error) {
+            done(error)
+        }
+        
     }))
 }
 

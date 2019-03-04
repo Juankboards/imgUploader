@@ -10,6 +10,9 @@
 		border: 1px transparent;
 		cursor: pointer;
 	}
+	button:disabled {
+		background-color: #AAA;
+	}
 	#album {
 		display: flex;
 		justify-content: left;
@@ -60,6 +63,9 @@
 	}
 	#clear {
 		background-color: #CC0E00;
+	}
+	button#clear:disabled {
+		background-color: #AAA;
 	}
 	#clear, #upload-imgs {
 		display:none;
