@@ -324,7 +324,7 @@
 
 		function checkContainer(fn) {
 			if(!document.getElementById("result").childElementCount) {
-				fn()
+				if(fn) fn()
 				clearPrevImgs()
 			}
 		}
