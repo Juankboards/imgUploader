@@ -3,7 +3,7 @@
 		border-radius: 50px;
 		width: 80%;
 		max-width: 150px;
-		height: 30px;
+		height: 45px;
 		color: #fcfcfc;
 		font-size: 1.05rem;
 		background-color: #0EADFF;
@@ -14,15 +14,13 @@
 		background-color: #AAA;
 	}
 	#album {
-		display: flex;
-		justify-content: left;
-		padding: 10px 0;
-		align-items: center;
-		flex-flow: row wrap;
+		display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 15px;
+    justify-items: stretch;
+    align-items: center;
 	}
 	#album .photo {
-		width: 33%;
-		max-width: 550px;
 		position: relative;
 	}
 	#album .photo h2 {
@@ -166,13 +164,16 @@
 		font-size: 1.9rem;
 	}
 	#select-images{
-		position: fixed;
-		bottom: 25px;
-		right: 25px;
 		z-index: 1;
 		max-width: 197px;
-		font-size: 1.2rem;
-		height: 50px;
+		position: fixed;
+		bottom: 1rem;
+		right: -webkit-calc(50% - 48rem);
+		right: expression(50% - 48rem);
+		right: -moz-calc(50% - 48rem);
+		right: -o-calc(50% - 48rem);
+		right: calc(50% - 48rem);
+		cursor: pointer;
 		font-weight: bold;
 	}
 	h1{
@@ -190,6 +191,35 @@
 		font-size: 1.7rem;
 		white-space: nowrap;
 	}
+
+	@media (-webkit-min-device-pixel-ratio: 2), 
+    (min-resolution: 192dpi), (max-width: 100rem) {
+			#select-images{
+				right: 2rem;
+			}
+		}
+	@media (-webkit-min-device-pixel-ratio: 2), 
+    (min-resolution: 192dpi), (max-width: 75rem) {
+			#album {
+				grid-template-columns: 1fr 1fr 1fr;
+			}
+			#select-images{
+				right: 2rem;
+				bottom: 0.5rem;
+			}
+    }
+	 @media (-webkit-min-device-pixel-ratio: 2), 
+    (min-resolution: 192dpi), (max-width: 56rem) {
+			#album {
+				grid-template-columns: 1fr 1fr;
+			}
+    }
+		 @media (-webkit-min-device-pixel-ratio: 2), 
+    (min-resolution: 192dpi), (max-width: 35rem) {
+			#album {
+				grid-template-columns: 1fr;
+			}
+    }
 </style>
 {{> nav }}
 <section>

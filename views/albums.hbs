@@ -1,17 +1,14 @@
 <style>
 	#albums {
-		display: flex;
-		justify-content: left;
-		align-items: center;
-		flex-flow: wrap;
-		padding: 10px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 15px;
+    justify-items: stretch;
+    align-items: center;
 	}
 	#albums .album {
-		width: 33%;
-		max-width: 350px;
 		position: relative;
 		cursor: default;
-		margin: 5px;
 	}
 	#albums .album h2 {
 		text-align: center;
@@ -45,18 +42,50 @@
 	    color: #fff;
 	    font-size: 25px;
 	    cursor: pointer;
-			z-index: 100000;
+			z-index: 1;
 	}
 	#albums .album i:hover {
 		color: #af0e40;
 	}
 	#new-album{
-		position: absolute;
-		bottom: 25px;
-		right: 25px;
+		position: fixed;
+		bottom: 1rem;
+		right: -webkit-calc(50% - 48rem);
+		right: expression(50% - 48rem);
+		right: -moz-calc(50% - 48rem);
+		right: -o-calc(50% - 48rem);
+		right: calc(50% - 48rem);
 		cursor: pointer;
 		font-weight: bold;
 	}
+	@media (-webkit-min-device-pixel-ratio: 2), 
+    (min-resolution: 192dpi), (max-width: 100rem) {
+			#new-album{
+				right: 2rem;
+			}
+		}
+	@media (-webkit-min-device-pixel-ratio: 2), 
+    (min-resolution: 192dpi), (max-width: 75rem) {
+			#albums {
+				grid-template-columns: 1fr 1fr 1fr;
+			}
+			#new-album{
+				right: 2rem;
+				bottom: 0.5rem;
+			}
+    }
+	 @media (-webkit-min-device-pixel-ratio: 2), 
+    (min-resolution: 192dpi), (max-width: 56rem) {
+			#albums {
+				grid-template-columns: 1fr 1fr;
+			}
+    }
+		 @media (-webkit-min-device-pixel-ratio: 2), 
+    (min-resolution: 192dpi), (max-width: 35rem) {
+			#albums {
+				grid-template-columns: 1fr;
+			}
+    }
 </style>
 {{> nav }}
 <section>

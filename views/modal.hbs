@@ -1,6 +1,6 @@
 <style>
 	#modal {
-		position: absolute;
+		position: fixed;
 		width: 100%;
 		height: 100%;
 		display: none;
@@ -9,38 +9,37 @@
 		top: 0;
 		left: 0;
         text-align: center;
-        padding-top: 100px;
+        justify-content: center;
+        align-items: center;
 	}
 
 	#modal i {
-		position: absolute;
-		top: 20px;
-		right: 25px;
+		position: fixed;
+		top: 0.3rem;
+		right: 1rem;
 		font-size: 35px;
-		color: #000;
-		background-color: transparent;
+		color: #444;
 	}
     #form-errors {
         text-align: left;
     }
-    #modal form, #form-errors {
+    #modal .modal-wrapper {
         width: 80%;
         max-width: 320px;
+    }
+    #modal form, #form-errors {
         margin: 50px auto;
-        background-color: transparent;
     }
     #modal form .input-wrapper{
         width: 100%;
         margin: 0 0 30px;
         text-align: left;
-        background-color: inherit;
     }
     #modal form .input-wrapper.input-focus label{
         color: #108ee9;
     }
     #modal label,#modal input,#modal h1,#modal p,#modal a {
         width: 100%;
-        background-color: inherit;
     }
     h4 {
         font-family: 'Exo', sans-serif;
@@ -75,23 +74,20 @@
     }
 	textarea {
 		resize: none;
-		height: 300px;
+		height: 250px;
 		width: 100%;
-		background-color: transparent;
 	}
     button {
         border-radius: 50px;
-        width: 80%;
-        max-width: 250px;
-        margin: 50px auto 5px;
+        width: 45%;
+        max-width: 200px;
         color: #fcfcfc;
-        padding: 15px 0;
         font-size: 1.1rem;
-        line-height: 1.3;
         font-weight: 100;
         background-color: #0EADFF;
-        height: 60px;
-        border: 1px transparent;
+        height: 55px;
+        border: none;
+        z-index: 80;
     }
     #modal p, #modal a {
         color: #0EADFF;
@@ -101,7 +97,6 @@
     #modal .inner, #modal .outer {
         border: 2px solid #0f0f0f;
         margin: 0 auto;
-        background-color: transparent;
     }
     #modal .outer{
         padding: 3px;
@@ -117,7 +112,6 @@
     }
 
     i, h4 {
-        background-color: transparent;
         margin: 0 auto;
     }
     #signup-form {
@@ -126,20 +120,30 @@
     #modal input:invalid {
         box-shadow:none
     }
+     @media (-webkit-min-device-pixel-ratio: 2), 
+    (min-resolution: 192dpi), (max-width: 56em) {
+        button {
+            color: #fcfcfc;
+            font-size: .85rem;
+            height: 45px;
+        }
+    }
 </style>
 
 <div id="modal">
-	<i onclick="closeModal()" class="fas fa-times"></i>
-	<div id="form-errors"></div>
-	<form onclick="event.stopPropagation()" onsubmit="createAlbum(event)" id="new-album-form" class="album">	
-		<div class="input-wrapper">
-			<label for="name">Album</label>
-			<input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="text" id="album" name="album" required/>
-		</div>
-		<div class="input-wrapper">
-			<label for="description">Description</label>
-			<textarea onfocus="inputFocus(event)" onblur="inputBlur(event)" id="album-input-description" name="description" ></textarea>
-		</div>		
-		<button onclick="submitForm(event)">Create</button>
-	</form>
+    <div class="modal-wrapper">
+        <i onclick="closeModal()" class="fas fa-times"></i>
+        <div id="form-errors"></div>
+        <form onclick="event.stopPropagation()" onsubmit="createAlbum(event)" id="new-album-form" class="album">	
+            <div class="input-wrapper">
+                <label for="name">Album</label>
+                <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="text" id="album" name="album" required/>
+            </div>
+            <div class="input-wrapper">
+                <label for="description">Description</label>
+                <textarea onfocus="inputFocus(event)" onblur="inputBlur(event)" id="album-input-description" name="description" ></textarea>
+            </div>		
+            <button onclick="submitForm(event)">Create</button>
+        </form>
+    </div>
 </div>

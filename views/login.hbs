@@ -7,29 +7,31 @@
         width: 100%;
         height: 100%;
         text-align: center;
-        padding-top: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     #form-errors {
         text-align: left;
     }
-    .user-info-form form, #form-errors {
+    .user-info-form .user-info-wrapper {
         width: 80%;
         max-width: 320px;
+    }
+    .user-info-form form, #form-errors {
+        width: 100%;
         margin: 50px auto;
-        background-color: transparent;
     }
     .user-info-form form .input-wrapper{
         width: 100%;
         margin: 0 0 30px;
         text-align: left;
-        background-color: inherit;
     }
     .user-info-form form .input-wrapper.input-focus label{
         color: #108ee9;
     }
     label, input, h1, p, a {
         width: 100%;
-        background-color: inherit;
     }
     h4 {
         font-family: 'Exo', sans-serif;
@@ -86,7 +88,6 @@
     .user-info-form .inner, .user-info-form .outer {
         border: 2px solid #0f0f0f;
         margin: 0 auto;
-        background-color: transparent;
     }
     .user-info-form .outer{
         padding: 3px;
@@ -102,7 +103,6 @@
     }
 
     i, h4 {
-        background-color: transparent;
         margin: 0 auto;
     }
     #signup-form {
@@ -115,44 +115,46 @@
 
 <section>
 	<div class="user-info-form">
-        {{!-- logo --}}
-        <div class="outer">
-            <div class="inner">
-                <i class="fab fa-mixcloud"></i>
-                <h4>Image</h4>
-                <h4>loader</h4>
+        <div class="user-info-wrapper">
+            {{!-- logo --}}
+            <div class="outer">
+                <div class="inner">
+                    <i class="fab fa-mixcloud"></i>
+                    <h4>File</h4>
+                    <h4>loader</h4>
+                </div>
             </div>
+            <div id="form-errors"></div>
+            {{!-- loging form --}}
+            <form class="user">
+                <div class="input-wrapper">
+                    <label for="login-email">Email</label>
+                    <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="email" name="email" required />
+                </div>
+                <div class="input-wrapper">
+                    <label for="login-password">Password</label>
+                    <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="password" name="password" minlength="6" required/>
+                </div> 
+                <button onclick="submitForm(event)">Log In</button>       
+                <p><a onclick="toggleForm(event)">Create Account</a></p>
+            </form>
+            {{!-- signup form --}}
+            <form id="signup-form" class="user">
+                <div class="input-wrapper">
+                    <label for="signup-email">Email</label>
+                    <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="email" name="email" required/>
+                </div>
+                <div class="input-wrapper">
+                    <label for="signup-password">Password</label>
+                    <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="password" name="password" minlength="6" required/>
+                </div> 
+                <div class="input-wrapper">
+                    <label for="repeat-password">Repeat Password</label>
+                    <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="password" name="repeat password" minlength="6" required/>
+                </div> 
+                <button onclick="submitForm(event)">Sign Up</button>      
+                <p><a onclick="toggleForm(event)">Log In</a></p>
+            </form>
         </div>
-        <div id="form-errors"></div>
-        {{!-- loging form --}}
-        <form class="user">
-            <div class="input-wrapper">
-                <label for="login-email">Email</label>
-                <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="email" name="email" required />
-            </div>
-            <div class="input-wrapper">
-                <label for="login-password">Password</label>
-                <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="password" name="password" minlength="6" required/>
-            </div> 
-            <button onclick="submitForm(event)">Log In</button>       
-            <p><a onclick="toggleForm(event)">Create Account</a></p>
-        </form>
-        {{!-- signup form --}}
-        <form id="signup-form" class="user">
-            <div class="input-wrapper">
-                <label for="signup-email">Email</label>
-                <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="email" name="email" required/>
-            </div>
-            <div class="input-wrapper">
-                <label for="signup-password">Password</label>
-                <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="password" name="password" minlength="6" required/>
-            </div> 
-            <div class="input-wrapper">
-                <label for="repeat-password">Repeat Password</label>
-                <input onfocus="inputFocus(event)" onblur="inputBlur(event)" type="password" name="repeat password" minlength="6" required/>
-            </div> 
-            <button onclick="submitForm(event)">Sign Up</button>      
-            <p><a onclick="toggleForm(event)">Log In</a></p>
-        </form>
 	</div>
 </section>

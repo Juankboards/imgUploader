@@ -7,7 +7,7 @@
         top: 0;
         left: 0;
         padding: 0;
-        z-index: 1;
+        z-index: 111111;
     }
     .division{
         background-color: #fff;
@@ -40,17 +40,83 @@
     .nav-element.menu {
         justify-content: start;
     }
+    header nav .mobile {
+        display: none;
+    }
+    header nav .desktop {
+        display: flex;
+    }
+    .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 46px;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        z-index: 1;
+        height: 100%;
+        justify-items: center;
+        align-content: center;
+        flex-flow: wrap;
+        text-align: center;
+        border-radius: 1.38rem;
+    }
+    .nav-element.mobile .mobile-menu a,.nav-element.mobile .mobile-menu p{
+        color: #000;
+        font-size: 2rem;
+        margin: 30px auto;
+        width: 100%;
+    }
+    .nav-element.mobile .mobile-menu a:hover,.nav-element.mobile .mobile-menu p:hover{
+        text-decoration: underline;
+    }
+    
+    header nav .nav-element.mobile i {
+		color: #fff;
+        margin: 0 20px;
+        font-size: 1.75rem;
+        cursor: pointer;
+	}
+    #mobile-menu-close {
+        display: none;
+    }
+     @media (-webkit-min-device-pixel-ratio: 2), 
+    (min-resolution: 192dpi), (max-width: 56em) {
+        button {
+            max-width: 200px;
+            margin: 50px auto 5px;
+            color: #fcfcfc;
+            font-size: .85rem;
+            height: 45px;
+            width: 45%;
+        }
+        header nav .mobile {
+                display: flex;
+            }
+            header nav .desktop{
+                display: none;
+            }
+    }
 </style>
 
 <header>
     <nav>
         <div class="nav-element menu">
             <i class="fab fa-mixcloud"></i>
-            <a href="/albums">Albums</a>
+            <a class="desktop" href="/albums">Albums</a>
         </div>
-        <div class="nav-element">
+        <div class="nav-element desktop">
             <p>{{ user.email }}</p>
             <p onclick="logout()">Logout</p>
+        </div>
+        <div class="nav-element mobile">
+            <i id="mobile-menu-open" onclick="openMobileMenu(event)" class="fas fa-bars"></i>
+            <i id="mobile-menu-close" onclick="closeMobileMenu(event)" class="fas fa-times"></i>
+            <div class="mobile-menu">
+                <p>{{ user.email }}</p>
+                <a href="/albums">Albums</a>
+                <p onclick="logout()">Logout</p>
+            </div>
         </div>
     </nav>
     <div class="division"></div>

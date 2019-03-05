@@ -198,12 +198,26 @@
 
 	// modal
 		function openModal() {
-			document.getElementById("modal").style.display = "block"
+			document.getElementById("modal").style.display = "flex"
 		}
 
 		function closeModal() {
 			document.getElementById("modal").style.display = "none"
 			document.getElementById("new-album-form").reset()
+			document.getElementById("form-errors").innerHTML = ""
+		}
+		// mobile menu
+		function openMobileMenu(event) {
+			event = polyfillEvent(event)
+			event.target.parentNode.lastElementChild.style.display = "flex"
+			event.target.style.display = "none"
+			document.getElementById("mobile-menu-close").style.display = "block"
+		}
+		function closeMobileMenu(event) {
+			event = polyfillEvent(event)
+			event.target.parentNode.lastElementChild.style.display = "none"
+			event.target.style.display = "none"
+			document.getElementById("mobile-menu-open").style.display = "block"
 		}
 
 	// album functions
