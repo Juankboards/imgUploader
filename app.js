@@ -43,5 +43,6 @@ app.set( 'view engine', 'hbs' );
 app.use('/', home)
 app.use('/albums', passport.authenticate('jwt', { session: false, failureRedirect: "/login" }), albums)
 app.use('/album', passport.authenticate('jwt', { session: false, failureRedirect: "/login" }), album)
+app.get('*', (req, res) => res.render('404'))
 
 app.listen(port, () => console.log(`App listening to port ${port}`))

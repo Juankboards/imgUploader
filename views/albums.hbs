@@ -20,13 +20,13 @@
 		left: 50%;
 		transform: translateX(-50%);
 		top: 30%;
-		background-color: rgba(255,255,255,.9);
+		background-color: rgba(14,173,255,.7);
 		border-radius: 5px;
 		text-transform: uppercase;
 		max-width: 85%;
 		overflow: hidden;
 		overflow-wrap: break-word;
-		color: #444;
+		color: #fff;
 		cursor: pointer;
 		z-index: 1;
 	}
@@ -50,11 +50,17 @@
 	#albums .album i:hover {
 		color: #af0e40;
 	}
+	#new-album{
+		position: absolute;
+		bottom: 25px;
+		right: 25px;
+		cursor: pointer;
+		font-weight: bold;
+	}
 </style>
-
+{{> nav }}
 <section>
-	<h1>Albums</h1>
-	<button onclick="openModal()">Create New Album</button>
+	<button id="new-album" onclick="openModal()">+ Create New Album</button>
 	<div id="albums">
 		{{#each albums as |album|}}
 		  <a id="{{ album._id }}" href="album/{{ album._id }}" class="album">

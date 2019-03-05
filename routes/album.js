@@ -10,7 +10,7 @@ router.get('/:id', async (req, res, next) => {
 		let id = ObjectId(req.params.id)
 		let album = await getAlbum(db, id)
 		res.locals.client.close()
-		res.render('album', { album: album })
+		res.render('album', { user: req.user, album })
 	} catch(error) {
 		res.render('404')
 	}

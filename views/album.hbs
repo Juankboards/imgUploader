@@ -97,11 +97,6 @@
 	#result .prev-image:hover .trash {
 		display: block;
 	}
-	
-
-
-
-
 	.spinner {
   /* changing --size & --circle-size will adjust size of the spinner */
   --size: 100%;
@@ -170,16 +165,40 @@
 		color: #000;
 		font-size: 1.9rem;
 	}
+	#select-images{
+		position: fixed;
+		bottom: 25px;
+		right: 25px;
+		z-index: 1;
+		max-width: 197px;
+		font-size: 1.2rem;
+		height: 50px;
+		font-weight: bold;
+	}
+	h1{
+		height: 4rem;
+		display: flex;
+		max-width: 15rem;
+		justify-content: center;
+		align-items: center;
+		border-bottom: 2px solid #0EADFF;
+		border-top: 2px solid #0EADFF;
+		margin: 10px auto 50px;
+		cursor: default;
+		font-weight: 100;
+		text-transform: uppercase;
+		font-size: 1.7rem;
+		white-space: nowrap;
+	}
 </style>
-
+{{> nav }}
 <section>
 	<h1>{{ album.name }}</h1>
 	<input onchange="loadImgs(event)" id="files" type="file" multiple/>
-	<button onclick="openBrowseWindow(event)" id="select-images">Select Images</button>
-	<button onclick="clearPrevImgs()" type="button" id="clear">Clear</button>
+	<button onclick="openBrowseWindow(event)" id="select-images">+ Select Images</button>
 	<output id="result"></output>
 	<button onclick="uploadImgs()" type="button" id="upload-imgs">Upload</button>
-	<button type="button" id="clear">Clear selected images</button>
+	<button onclick="clearPrevImgs()" type="button" id="clear">Clear</button>
 	<div id="album">
 		{{#each album.photos as |photo|}}
 		  <div class="photo">

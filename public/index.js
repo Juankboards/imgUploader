@@ -83,7 +83,12 @@
 				window.location.pathname = "/albums"
 				break
 			case "signup":
-				alert("User created, login with your email")
+				Swal.fire({
+					type: 'success',
+					title: "User created, login with your email",
+					showConfirmButton: false,
+					timer: 200
+				})
 				location.reload()
 				break
 			case "albums/add":
@@ -104,7 +109,7 @@
 				.then(() => {
 					document.getElementById(id).remove()
 				}).catch(err => {
-					alert(err) //should change for an error catcher function
+					Swal.fire({type: 'error', title: 'Oops...','text': err.toString()}) //should change for an error catcher function
 				})
 		}
 
@@ -127,7 +132,7 @@
 				.then(data => {
 					handleUploadedImgs(data, container)
 				}).catch(err => {
-					alert(err)
+					Swal.fire({type: 'error', title: 'Oops...','text': err.toString()})
 				}).finally(() => {
 					checkUploadImgsStatus()
 				})
@@ -145,7 +150,7 @@
 				.then(() => {
 					removeImgElement(event)
 				}).catch(err => {
-					alert(err)
+					Swal.fire({type: 'error', title: 'Oops...','text': err.toString()})
 				})
 		}
 
@@ -155,7 +160,7 @@
 				.then(data => {
 					resolveFormSubmit(path, data)
 				}).catch(err => {
-					alert(err)
+					Swal.fire({type: 'error', title: 'Oops...','text': err.toString()})
 				})
 		}
 		function logout() {
@@ -163,7 +168,7 @@
 			.then(() => {
 				window.location.pathname = "/"
 			}).catch(err => {
-				alert(err) //should change for an error catcher function
+				Swal.fire({type: 'error', title: 'Oops...','text': err.toString()}) //should change for an error catcher function
 			})
 		}
 
@@ -255,7 +260,7 @@
 		function diplayPrevImgs() {
 			document.getElementById("result").style.display = "flex"
 			document.getElementById("clear").style.display = "inline-block"
-			document.getElementById("upload-imgs").style.display = "block"
+			document.getElementById("upload-imgs").style.display = "inline-block"
 		}
 
 		function imageLoaded(container, remainingFiles, event) {
@@ -284,7 +289,7 @@
 										`Name: ${error.name} \n` +
 										`Type: ${error.type}\n`
 			})
-			alert(errorStr)
+			Swal.fire({type: 'error', title: 'Oops...','text': errorStr})
 		}
 
 		function clearPrevImgs() {

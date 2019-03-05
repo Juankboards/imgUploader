@@ -31,7 +31,7 @@ function getAlbums(db) {
 function addAlbum(db, album) {
     return db.collection('folders').insertOne(album)
         .then(result => {
-            if(result.insertedId ) return true
+            if(result && result.insertedId ) return true
             throw ('Non album inserted')
         })
 }
@@ -39,7 +39,7 @@ function addAlbum(db, album) {
 function delAlbumDb(db, id) {
     return db.collection("folders").deleteOne({ "_id": id })
         .then(result => {
-            if(result.deletedCount ) return true
+            if(result && result.deletedCount ) return true
             throw ('Non album deleted')
         })
 }
@@ -47,7 +47,7 @@ function delAlbumDb(db, id) {
 function getUserByEmail(db, email) {
     return db.collection("users").findOne(email)
         .then(user => {
-            if(user.email ) return user
+            if(user && user.email ) return user
             throw ('Incorrect Email')
         })
 }
@@ -55,7 +55,7 @@ function getUserByEmail(db, email) {
 function addUser(db, user) {
     return db.collection('users').insertOne(user)
         .then(result => {
-            if(result.insertedId ) return result.insertedId
+            if(result && result.insertedId ) return result.insertedId
             throw ('Non user inserted')
         })
 }

@@ -21,6 +21,8 @@ function passportConfig(db, passport) {
                 if(!passwordsMatch) return done("Incorrect Password")
                 return done(null, user)
             } catch (error) {
+                console.log(error);
+                
                 done(error)
             }
     }))

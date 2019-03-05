@@ -1,5 +1,5 @@
 <style>
-    div{
+    .wrapper{
         width: 100%;
         height: 100%;
         display: flex;
@@ -9,15 +9,46 @@
         top: 0;
         left: 0;
         font-size: 1.5rem;
-        background-color: #0EADFF;
+        background-color: #fff;
         margin: 0;
+        flex-flow: wrap;
+        align-content: center;
     }
     h1{
+        width: 100%;
         background-color: transparent;
-        color: #fff;
+        color: #000;
         text-align: center;
     }
+    .inner, .outer {
+        border: 2px solid #0f0f0f;
+        margin: 0 auto;
+        background-color: transparent;
+    }
+    .outer{
+        padding: 3px;
+        width: 150px;
+        height: 170px;
+    }
+
+    .inner{
+        width: 140px;
+        height: 160px;
+        font-size: 2rem;
+        text-align: center;
+    }
+    i, h4 {
+        background-color: transparent;
+        margin: 0 auto;
+    }
 </style>
-<div>
+<section class="wrapper">
+    <div class="outer">
+        <div class="inner">
+            <i class="fab fa-mixcloud"></i>
+            <h4>Image</h4>
+            <h4>loader</h4>
+        </div>
+    </div>
     <h1>Sh%# happens!<br />404 Page Not Found</h1>
-</div>
+</section>

@@ -1,0 +1,57 @@
+<style>
+    header{
+        position: fixed;
+        background-color: #0EADFF;
+        width: 100%;
+        height: 4.3rem;
+        top: 0;
+        left: 0;
+        padding: 0;
+        z-index: 1;
+    }
+    .division{
+        background-color: #fff;
+        width: 100%;
+        height: 1.4rem;
+        border-top-left-radius: 3rem;
+        border-top-right-radius: 3rem;
+        position: absolute;
+        bottom: 0px;
+    }
+    .nav-element{
+        width: 40%;
+        max-width: 25rem;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        height: 100%;
+    }
+    .nav-element a,.nav-element p{
+        margin: 0 15px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+    header .nav-element i{
+        color: #fff;
+        font-size: 1.9rem;
+        margin: 0 20px;
+    }
+    .nav-element.menu {
+        justify-content: start;
+    }
+</style>
+
+<header>
+    <nav>
+        <div class="nav-element menu">
+            <i class="fab fa-mixcloud"></i>
+            <a href="/albums">Albums</a>
+        </div>
+        <div class="nav-element">
+            <p>{{ user.email }}</p>
+            <p onclick="logout()">Logout</p>
+        </div>
+    </nav>
+    <div class="division"></div>
+</header>
