@@ -22,7 +22,6 @@ function passportConfig(db, passport) {
                 return done(null, user)
             } catch (error) {
                 console.log(error);
-                
                 done(error)
             }
     }))
@@ -32,12 +31,13 @@ function passportConfig(db, passport) {
         secretOrKey: process.env.JWT_SECRET,
     }, async (jwtPayload, done) => {
         try {
-            if (Date.now() > jwtPayload.expires) throw ('jwt expired')
+            if (Date.now() > jwtPayload.expires) return done (null, null)
             let user = await getUserByEmail(db, { email: jwtPayload.email })
             delete user.password
             done(null, user)
-        } catch(error) {
-            done(error)
+        } catch(err) {
+            console.log(err)          
+            done(null, null)
         }
         
     }))
