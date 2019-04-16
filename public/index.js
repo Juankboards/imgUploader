@@ -125,7 +125,7 @@
 		}
 
 		function uploadImgBatch(imgs) {
-			let imgsBatch = imgs.splice(0, 1)
+			let imgsBatch = imgs.shift()
 			let container = document.getElementById("album")
 			if(!imgsBatch.length) return
 			request("POST", `${window.location.pathname}/add`, { imgsBatch })
