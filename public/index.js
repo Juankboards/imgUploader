@@ -255,9 +255,15 @@
 		}
 
 		function filterImgsSelection(imgsSelected) {
-			return Object.values(imgsSelected).reduce((results, file) => {				
-				if(file.type && file.type.match('image.*')) results.imgs.push(file)
-				else results.errors.push({name: file.name, type: file.type})
+			return Object.values(imgsSelected).reduce((results, file) => {
+				if(!(file.type && file.type.match('image.*'))) {
+					results.errors.push({name: file.name, type: file.type})
+				} if(!file.size || file.size > 20000000) {
+					console.log(file.size)
+					results.errors.push({name: file.name, type: `Too large; ${(file.size/1000000).toFixed(3)} MB`})
+				} else {
+					results.imgs.push(file)
+				}
 				return results
 			}, { imgs: [], errors: [] })
 		}
@@ -275,6 +281,7 @@
 			document.getElementById("result").style.display = "flex"
 			document.getElementById("clear").style.display = "inline-block"
 			document.getElementById("upload-imgs").style.display = "inline-block"
+			document.getElementById("max-file-size").style.display = "block"
 		}
 
 		function imageLoaded(container, remainingFiles, event) {
@@ -311,6 +318,7 @@
 			document.getElementById("clear").style.display = "none"
 			document.getElementById("result").style.display = "none"
 			document.getElementById("upload-imgs").style.display = "none"
+			document.getElementById("max-file-size").style.display = "none"
 		}
 
 		function removeImgElement(event, prevImg) {

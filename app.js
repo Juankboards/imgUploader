@@ -26,8 +26,8 @@ app.use(function(req, res, next) {
 });
 
 app.use(compression())
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb', extended:false }));
+app.use(express.json({limit: '100mb'}));
+app.use(express.urlencoded({limit: '100mb', extended:false }));
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(cookieParser())
 

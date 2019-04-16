@@ -13,6 +13,11 @@
 	button:disabled {
 		background-color: #AAA;
 	}
+	#max-file-size {
+		display: none; 
+		color: #afafaf; 
+		font-size: 10px
+	}
 	#album {
 		display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -227,6 +232,7 @@
 	<input onchange="loadImgs(event)" id="files" type="file" multiple/>
 	<button onclick="openBrowseWindow(event)" id="select-images">+ Select Images</button>
 	<output id="result"></output>
+	<p id="max-file-size">Max File Size: 20 MB</p>
 	<button onclick="uploadImgs()" type="button" id="upload-imgs">Upload</button>
 	<button onclick="clearPrevImgs()" type="button" id="clear">Clear</button>
 	<div id="album">
