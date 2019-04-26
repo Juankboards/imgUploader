@@ -15,7 +15,8 @@
 				if (this.readyState == 4) {
 					if(this.status >= 200 && this.status < 300)
 						resolve(JSON.parse(this.responseText).data)
-					reject(JSON.parse(this.responseText).error)
+					console.log(this.responseText)
+					reject(JSON.parse(this.responseText))
 				}
 			}
 			req.withCredentials = true
@@ -108,35 +109,43 @@
 			request("POST", `albums/${id}/delete`)
 				.then(() => {
 					document.getElementById(id).remove()
-				}).catch(err => {
+				}).catch(e => {
+					let err = e.error
 					Swal.fire({type: 'error', title: 'Oops...','text': err.toString()}) //should change for an error catcher function
 				})
 		}
 
 	// image functions
 		function uploadImgs() {
+			loading()
 			let imgs = Array.from(document.getElementById("result").children).map(child => {
 				waiting(child, child.lastElementChild)
 				return child.lastElementChild.lastElementChild.src
 			})
-			if(!imgs.length) return
-			loading()
+			if(!imgs.length) {
+				loaded()
+				return
+			}
+
 			uploadImgBatch(imgs)			
 		}
 
 		function uploadImgBatch(imgs) {
-			let imgsBatch = imgs.shift()
+			console.log("upload photo")
+			let image = imgs.shift()
 			let container = document.getElementById("album")
-			if(!imgsBatch.length) return
-			request("POST", `${window.location.pathname}/add`, { imgsBatch })
+			if(!image) return
+			request("POST", `${window.location.pathname}/add`, { image })
 				.then(data => {
 					handleUploadedImgs(data, container)
-				}).catch(err => {
+				}).catch(e => {
+					let err = e.error
+					handleUploadedImgs(e.data, container)
 					Swal.fire({type: 'error', title: 'Oops...','text': err.toString()})
 				}).finally(() => {
 					checkUploadImgsStatus()
-				})
-			uploadImgBatch(imgs)
+					uploadImgBatch(imgs)
+				})			
 		}
 
 		function checkUploadImgsStatus(remaining) {
@@ -149,7 +158,8 @@
 			request("POST", `${window.location.pathname}/delete`, { img })
 				.then(() => {
 					removeImgElement(event)
-				}).catch(err => {
+				}).catch(e => {
+					let err = e.error
 					Swal.fire({type: 'error', title: 'Oops...','text': err.toString()})
 				})
 		}
@@ -159,7 +169,8 @@
 			request("POST", path, data)
 				.then(data => {
 					resolveFormSubmit(path, data)
-				}).catch(err => {
+				}).catch(e => {
+					let err = e.error
 					Swal.fire({type: 'error', title: 'Oops...','text': err.toString()})
 				})
 		}
@@ -167,7 +178,8 @@
 			request("GET", `/logout`)
 			.then(() => {
 				window.location.pathname = "/"
-			}).catch(err => {
+			}).catch(e => {
+				let err = e.error
 				Swal.fire({type: 'error', title: 'Oops...','text': err.toString()}) //should change for an error catcher function
 			})
 		}
@@ -354,12 +366,10 @@
 			container.insertBefore(newImg,null)
 		}
 
-		function handleUploadedImgs(imgs, container) {
-			if(!imgs.length) return
-			let img = imgs.shift()
+		function handleUploadedImgs(img, container) {
+			if(!img) return
 			removeUploadedImg(img)
 			showUploadedImgs(img, container)
-			handleUploadedImgs(imgs, container)
 		}
 
 		function toggleForm(event) {

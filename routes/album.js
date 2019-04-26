@@ -43,39 +43,21 @@ router.post('/:id/add', async (req, res, next) => {
 		return
 	}
 	
-	let imgs = req.body.imgsBatch
-	let promises = []
-	let added = []
-
-	promises = imgs.map(async imgData => {
-		let imgType = imgData.split(";")[0].split("/")[1],
-			imgName = req.user._id.toString() + "/" + documentName + "/img_" + Date.now() + "_" + Math.random().toString().split(".")[1]
-		added.push({ data: imgData, name: `${process.env.IMG_DB_SERVICE}${process.env.DB_NAME}/${imgName}`})
-		
-		try {
-			let dbResult = await addImgDb(db, id, imgName)
-			if(dbResult.ok) {
-				return ({
-					imgData,
-					imgName,
-					imgType
-				})
-			}
-		} catch(e) {
-			throw e
-		}
-	})
-
+	let imgData = req.body.image
+	let imgType = imgData.split(";")[0].split("/")[1]
+	let randomId = Date.now() + "_" + Math.random().toString().split(".")[1]
+	let imgName = req.user._id.toString() + "/" + documentName + "/img_" + randomId
+	let result = { data: imgData, name: `${process.env.IMG_DB_SERVICE}${process.env.DB_NAME}/${imgName}` }
 	try {
-		let dbResults = await Promise.all(promises)
-		let s3Results = await Promise.all(dbResults.map(img => addImgS3(img)))
-
-		res.status(200).json({ data: added})
-	} catch(err) {
-		console.log(err);
-		res.status(400).json({ error: err})
-	}
-	
+		let dbResult = await addImgDb(db, id, imgName)
+		if(!dbResult.ok) throw new Error("Error storing image on DB")
+		await addImgS3({ imgData, imgName, imgType })
+		res.status(200).json({ data: result})
+	} catch(e) {
+		console.log(e);
+		delImgDb(db, id, imgName)
+		res.status(400).json({ data: result, error: e})
+	}	
 })
 
 module.exports = router
