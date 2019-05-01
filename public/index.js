@@ -15,7 +15,6 @@
 				if (this.readyState == 4) {
 					if(this.status >= 200 && this.status < 300)
 						resolve(JSON.parse(this.responseText).data)
-					console.log(this.responseText)
 					reject(JSON.parse(this.responseText))
 				}
 			}
@@ -131,7 +130,6 @@
 		}
 
 		function uploadImgBatch(imgs) {
-			console.log("upload photo")
 			let image = imgs.shift()
 			let container = document.getElementById("album")
 			if(!image) return
@@ -271,7 +269,6 @@
 				if(!(file.type && file.type.match('image.*'))) {
 					results.errors.push({name: file.name, type: file.type})
 				} if(!file.size || file.size > 20000000) {
-					console.log(file.size)
 					results.errors.push({name: file.name, type: `Too large; ${(file.size/1000000).toFixed(3)} MB`})
 				} else {
 					results.imgs.push(file)

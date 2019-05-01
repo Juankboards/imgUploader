@@ -7,6 +7,7 @@ const express = require('express'),
   hbs = require('express-handlebars'),
   passportConfig =require('./config/passport'),
   home = require('./routes/home'),
+  api = require('./routes/api'),
   albums = require('./routes/albums'),
   album = require('./routes/album')
   
@@ -41,6 +42,7 @@ app.set( 'view engine', 'hbs' );
 
 // routes
 app.use('/', home)
+app.use('/api', api)
 app.use('/albums', passport.authenticate('jwt', { session: false, failureRedirect: "/login" }), albums)
 app.use('/album', passport.authenticate('jwt', { session: false, failureRedirect: "/login" }), album)
 app.get('*', (req, res) => res.render('404'))

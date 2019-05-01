@@ -52,6 +52,31 @@ function getUserByEmail(db, email) {
         })
 }
 
+function getUserDataAsync(db, email) {
+    return db.collection("users").aggregate([
+        { 
+            $match : email
+        },
+        {
+            $unwind: "$albums"
+         },
+        {            
+            $lookup:
+                {
+                from: "folders",
+                localField: "albums",
+                foreignField: "_id",
+                as: "albums_"
+                }
+        },
+        {
+            $project :{
+                password: 0,
+            }
+        }
+    ]).toArray()
+}
+
 function addUser(db, user) {
     return db.collection('users').insertOne(user)
         .then(result => {
@@ -61,11 +86,11 @@ function addUser(db, user) {
 }
 
 function addAlbumFromUser(db, userId, albumId) {
-    return db.collection('users').updateOne({ "_id": userId}, { $push: { "albums": albumId.toString() } })
+    return db.collection('users').updateOne({ "_id": userId}, { $push: { "albums": albumId } })
 }
 
 function removeAlbumFromUser(db, userId, albumId) {
-    return db.collection('users').updateOne({ "_id": userId}, { $pull: { "albums": albumId.toString() } })
+    return db.collection('users').updateOne({ "_id": userId}, { $pull: { "albums": albumId } })
 }
 
 module.exports = {
@@ -75,6 +100,7 @@ module.exports = {
     addAlbum,
     delAlbumDb,
     getUserByEmail,
+    getUserDataAsync,
     addUser,
     addAlbumFromUser,
     removeAlbumFromUser
