@@ -4,6 +4,7 @@ const express = require('express'),
 	compression = require('compression'),
   cookieParser = require('cookie-parser'),
   passport = require('passport'),
+  cors = require('cors'),
   hbs = require('express-handlebars'),
   passportConfig =require('./config/passport'),
   home = require('./routes/home'),
@@ -16,11 +17,7 @@ if(!process.env.NODE_ENV) require('dotenv').config()
 const port = process.env.PORT || 8080,
 app = express()
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "https://czaudiovisual.netlify.com/");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+app.use(cors());
 
 
 app.use(function(req, res, next) {
