@@ -1,6 +1,5 @@
 const express = require('express'),
 	router = express.Router(),
-	// ObjectId = require('mongodb').ObjectID,
 	{ getUserDataAsync } = require('./../utils/dbFunctions')
 
 router.get('/', async (req, res, next) => {
@@ -9,10 +8,9 @@ router.get('/', async (req, res, next) => {
     let promises  = []
     users.forEach( email => promises.push(getUserDataAsync(db, { email })))
     Promise.all(promises)
-        .then(results => {
-            results = results.filter(result => result.length)
-            console.log(results)
-            res.status(201).json({ results })
+        .then(data => {
+            data = [].concat(...data.filter(result => result.length))
+            res.status(201).json({ data })
         })
         .catch(err => res.status(400).json({ err }))
 })

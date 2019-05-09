@@ -66,7 +66,7 @@ function getUserDataAsync(db, email) {
                 from: "folders",
                 localField: "albums",
                 foreignField: "_id",
-                as: "albums_"
+                as: "album"
                 }
         },
         {

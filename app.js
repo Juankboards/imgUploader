@@ -16,6 +16,12 @@ if(!process.env.NODE_ENV) require('dotenv').config()
 const port = process.env.PORT || 8080,
 app = express()
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "https://czaudiovisual.netlify.com/");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 
 app.use(function(req, res, next) {
 	MongoClient.connect(process.env.DB_CONNECTION, { useNewUrlParser: true }, (err, client) => {
